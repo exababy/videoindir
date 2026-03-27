@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="tr" data-tema="karanlik">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Paneli · Rabels</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--sinir:rgba(255,255,255,0.08);--yazi:#f0f0f8;--yazi2:#8888aa;--vurgu:#6366f1;--basari:#22c55e;--hata:#ef4444;--glow:rgba(99,102,241,0.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--yazi);min-height:100vh}
+.kenar{width:240px;background:var(--bg2);border-right:1px solid var(--sinir);position:fixed;top:0;left:0;bottom:0;padding:24px 0;display:flex;flex-direction:column}
+.kenar-logo{padding:0 20px 24px;border-bottom:1px solid var(--sinir);margin-bottom:16px}
+.kenar-logo span{color:var(--vurgu)}
+.kenar-link{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:14px;font-weight:500;color:var(--yazi2);cursor:pointer;transition:all 0.2s;border:none;background:none;width:100%;text-decoration:none}
+.kenar-link:hover,.kenar-link.aktif{color:var(--yazi);background:var(--glow)}
+.kenar-link.cikis{color:var(--hata);margin-top:auto}
+.icerik{margin-left:240px;padding:32px}
+.ustbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+.ustbar h1{font-size:22px;font-weight:700;letter-spacing:-0.5px}
+.kart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+.istat-kart{background:var(--bg2);border:1px solid var(--sinir);border-radius:14px;padding:20px}
+.istat-kart .etiket{font-size:13px;color:var(--yazi2);margin-bottom:8px}
+.istat-kart .deger{font-size:28px;font-weight:700;letter-spacing:-1px}
+.istat-kart .vurgu{color:var(--vurgu)}
+.bolum{background:var(--bg2);border:1px solid var(--sinir);border-radius:14px;padding:24px;margin-bottom:20px}
+.bolum h3{font-size:15px;font-weight:600;margin-bottom:16px;color:var(--yazi2)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 12px;color:var(--yazi2);font-weight:500;border-bottom:1px solid var(--sinir)}
+td{padding:10px 12px;border-bottom:1px solid var(--sinir);font-family:'JetBrains Mono',monospace}
+tr:last-child td{border-bottom:none}
+.durum-tamamlandi{color:var(--basari)}
+.durum-hata{color:var(--hata)}
+.durum-isleniyor{color:var(--vurgu)}
+.giris-alani{display:flex;flex-direction:column;gap:10px;max-width:400px}
+.giris-alani input{background:var(--bg3);border:1px solid var(--sinir);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--yazi);font-family:'Sora',sans-serif;outline:none;transition:border-color 0.2s}
+.giris-alani input:focus{border-color:var(--vurgu)}
+.kaydet-btn{background:var(--vurgu);color:white;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;align-self:flex-start;transition:all 0.2s}
+.kaydet-btn:hover{box-shadow:0 6px 20px rgba(99,102,241,0.4)}
+.mesaj{padding:10px 14px;border-radius:8px;font-size:13px;display:none}
+.mesaj.aktif{display:block}
+.mesaj.basari{background:rgba(34,197,94,0.1);color:var(--basari);border:1px solid rgba(34,197,94,0.3)}
+.mesaj.hata2{background:rgba(239,68,68,0.1);color:var(--hata);border:1px solid rgba(239,68,68,0.3)}
+@media(max-width:768px){.kenar{display:none}.icerik{margin-left:0}}
+</style>
+</head>
+<body>
+<nav class="kenar">
+  <div class="kenar-logo"><strong><span>RABELS</span> Admin</strong><br><small style="color:var(--yazi2);font-size:12px">Hoş geldiniz, <%= adminAdi %></small></div>
+  <a class="kenar-link aktif" href="/admin/panel">📊 Dashboard</a>
+  <a class="kenar-link" href="/admin/cikis" class="cikis" style="color:#ef4444;margin-top:auto">⬡ Çıkış Yap</a>
+</nav>
+
+<div class="icerik">
+  <div class="ustbar">
+    <h1>Dashboard</h1>
+  </div>
+
+  <div class="kart-grid">
+    <div class="istat-kart">
+      <div class="etiket">Toplam İndirme</div>
+      <div class="deger vurgu"><%= toplamIndirme %></div>
+    </div>
+    <div class="istat-kart">
+      <div class="etiket">Tekil Ziyaretçi</div>
+      <div class="deger"><%= toplamZiyaretci %></div>
+    </div>
+    <div class="istat-kart">
+      <div class="etiket">En Çok Platform</div>
+      <div class="deger" style="font-size:18px"><%= platformIstatistik[0]?.platform || '-' %></div>
+    </div>
+    <div class="istat-kart">
+      <div class="etiket">En Çok Format</div>
+      <div class="deger" style="font-size:18px"><%= formatIstatistik[0]?.format?.toUpperCase() || '-' %></div>
+    </div>
+  </div>
+
+  <div class="bolum">
+    <h3>Platform İstatistikleri</h3>
+    <table>
+      <tr><th>Platform</th><th>İndirme</th></tr>
+      <% platformIstatistik.forEach(p => { %>
+      <tr><td><%= p.platform %></td><td><%= p.sayi %></td></tr>
+      <% }) %>
+      <% if (!platformIstatistik.length) { %><tr><td colspan="2" style="color:var(--yazi2)">Henüz veri yok</td></tr><% } %>
+    </table>
+  </div>
+
+  <div class="bolum">
+    <h3>Son İşlemler</h3>
+    <table>
+      <tr><th>Platform</th><th>Format</th><th>Kalite</th><th>Durum</th></tr>
+      <% sonIslemler.forEach(i => { %>
+      <tr>
+        <td><%= i.platform %></td>
+        <td><%= i.format %></td>
+        <td><%= i.kalite || '-' %></td>
+        <td class="durum-<%= i.durum %>"><%= i.durum %></td>
+      </tr>
+      <% }) %>
+      <% if (!sonIslemler.length) { %><tr><td colspan="4" style="color:var(--yazi2)">Henüz işlem yok</td></tr><% } %>
+    </table>
+  </div>
+
+  <div class="bolum">
+    <h3>Son Hatalar</h3>
+    <table>
+      <tr><th>Mesaj</th><th>Yol</th></tr>
+      <% hatalar.forEach(h => { %>
+      <tr><td style="color:var(--hata)"><%= h.mesaj %></td><td><%= h.yol %></td></tr>
+      <% }) %>
+      <% if (!hatalar.length) { %><tr><td colspan="2" style="color:var(--yazi2)">Hata kaydı yok</td></tr><% } %>
+    </table>
+  </div>
+
+  <div class="bolum">
+    <h3>Şifre Değiştir</h3>
+    <div class="giris-alani">
+      <input type="password" id="mevcutSifre" placeholder="Mevcut şifre">
+      <input type="password" id="yeniSifre" placeholder="Yeni şifre (min 8 karakter)">
+      <input type="password" id="yeniSifreTekrar" placeholder="Yeni şifre tekrar">
+      <button class="kaydet-btn" id="sifreGuncelleBtn" type="button">Güncelle</button>
+      <div class="mesaj" id="sifreMesaj"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function sifreDegistir() {
+  const el = document.getElementById('sifreMesaj');
+
+  try {
+    const yanit = await fetch('/admin/sifre-degistir', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mevcutSifre: document.getElementById('mevcutSifre').value,
+        yeniSifre: document.getElementById('yeniSifre').value,
+        yeniSifreTekrar: document.getElementById('yeniSifreTekrar').value
+      })
+    });
+
+    const veri = await yanit.json();
+    el.className = 'mesaj aktif ' + (veri.basari ? 'basari' : 'hata2');
+    el.textContent = veri.mesaj;
+  } catch {
+    el.className = 'mesaj aktif hata2';
+    el.textContent = 'İstek gönderilemedi.';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sifreGuncelleBtn')?.addEventListener('click', sifreDegistir);
+});
+</script>
+</body>
+</html>

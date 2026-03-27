@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="tr" data-tema="karanlik">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rabels Video İndirici</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #1a1a24;
+  --kart: rgba(255,255,255,0.04);
+  --sinir: rgba(255,255,255,0.08);
+  --yazi: #f0f0f8;
+  --yazi2: #8888aa;
+  --vurgu: #6366f1;
+  --vurgu2: #8b5cf6;
+  --basari: #22c55e;
+  --hata: #ef4444;
+  --uyari: #f59e0b;
+  --glow: rgba(99,102,241,0.15);
+}
+[data-tema="aydinlik"] {
+  --bg: #f8f8fc;
+  --bg2: #ffffff;
+  --bg3: #ededf5;
+  --kart: rgba(0,0,0,0.03);
+  --sinir: rgba(0,0,0,0.08);
+  --yazi: #111128;
+  --yazi2: #666688;
+  --glow: rgba(99,102,241,0.08);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--yazi);
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+}
+.agkesit {
+  background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(99,102,241,0.12), transparent);
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+}
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--sinir);
+  padding: 0 24px;
+}
+[data-tema="aydinlik"] header { background: rgba(248,248,252,0.9); }
+.header-ic {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-simge {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--vurgu), var(--vurgu2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.logo-yazi { font-size: 18px; font-weight: 700; color: var(--yazi); letter-spacing: -0.5px; }
+.logo-yazi span { color: var(--vurgu); }
+.tema-btn {
+  width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--sinir);
+  background: var(--kart); color: var(--yazi); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  transition: all 0.2s;
+}
+.tema-btn:hover { border-color: var(--vurgu); background: var(--glow); }
+main { position: relative; z-index: 1; }
+.kahraman {
+  max-width: 800px; margin: 0 auto;
+  padding: 80px 24px 40px;
+  text-align: center;
+}
+.kahraman-rozet {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--glow); border: 1px solid rgba(99,102,241,0.3);
+  padding: 6px 16px; border-radius: 100px; font-size: 13px;
+  color: var(--vurgu); margin-bottom: 24px;
+  animation: asagi 0.6s ease both;
+}
+@keyframes asagi { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
+.kahraman h1 {
+  font-size: clamp(32px, 6vw, 60px); font-weight: 700;
+  letter-spacing: -2px; line-height: 1.1;
+  animation: asagi 0.6s 0.1s ease both;
+}
+.kahraman h1 span { color: var(--vurgu); }
+.kahraman p {
+  font-size: 17px; color: var(--yazi2); margin-top: 16px; line-height: 1.7;
+  animation: asagi 0.6s 0.2s ease both;
+}
+.indirme-kutusu {
+  max-width: 760px; margin: 40px auto 0;
+  background: var(--bg2); border: 1px solid var(--sinir);
+  border-radius: 20px; padding: 28px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px var(--sinir);
+  animation: asagi 0.6s 0.3s ease both;
+}
+.url-giris-satiri { display: flex; gap: 12px; }
+.url-giris {
+  flex: 1; background: var(--bg3); border: 1px solid var(--sinir);
+  border-radius: 12px; padding: 14px 18px; font-size: 15px;
+  color: var(--yazi); font-family: 'Sora', sans-serif;
+  transition: all 0.2s; outline: none;
+}
+.url-giris:focus { border-color: var(--vurgu); box-shadow: 0 0 0 3px var(--glow); }
+.url-giris::placeholder { color: var(--yazi2); }
+.analiz-btn {
+  background: linear-gradient(135deg, var(--vurgu), var(--vurgu2));
+  color: white; border: none; border-radius: 12px;
+  padding: 14px 28px; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  font-family: 'Sora', sans-serif;
+}
+.analiz-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(99,102,241,0.4); }
+.analiz-btn:active { transform: translateY(0); }
+.analiz-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.platform-satirlar {
+  display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;
+}
+.platform-etiket {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--kart); border: 1px solid var(--sinir);
+  padding: 6px 14px; border-radius: 8px; font-size: 13px; color: var(--yazi2);
+}
+.sonuc-alani { margin-top: 24px; display: none; }
+.sonuc-alani.aktif { display: block; animation: asagi 0.4s ease both; }
+.medya-bilgi {
+  background: var(--kart); border: 1px solid var(--sinir);
+  border-radius: 14px; padding: 20px;
+  display: flex; gap: 16px; margin-bottom: 20px;
+  align-items: flex-start;
+}
+.medya-bilgi img {
+  width: 120px; height: 68px; border-radius: 8px; object-fit: cover; flex-shrink: 0;
+}
+.medya-bilgi-yazi h3 { font-size: 15px; font-weight: 600; line-height: 1.4; }
+.medya-bilgi-yazi .meta { font-size: 13px; color: var(--yazi2); margin-top: 6px; display: flex; gap: 12px; flex-wrap: wrap; }
+.platform-rozet {
+  font-size: 12px; padding: 3px 10px; border-radius: 6px;
+  background: var(--glow); color: var(--vurgu); border: 1px solid rgba(99,102,241,0.3);
+}
+.format-baslik { font-size: 14px; font-weight: 600; color: var(--yazi2); margin-bottom: 12px; }
+.format-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.format-kart {
+  width: 100%; background: var(--kart); border: 2px solid var(--sinir);
+  border-radius: 12px; padding: 14px; text-align: center; cursor: pointer;
+  transition: all 0.2s; color: inherit; font-family: inherit;
+}
+.format-kart:hover { border-color: var(--vurgu); background: var(--glow); }
+.format-kart.secili { border-color: var(--vurgu); background: var(--glow); }
+.format-kart .format-ad { font-size: 16px; font-weight: 700; color: var(--vurgu); }
+.format-kart .format-tur { font-size: 12px; color: var(--yazi2); margin-top: 4px; }
+.indir-btn {
+  width: 100%; background: linear-gradient(135deg, var(--vurgu), var(--vurgu2));
+  color: white; border: none; border-radius: 12px; padding: 16px;
+  font-size: 16px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s; font-family: 'Sora', sans-serif;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.indir-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(99,102,241,0.4); }
+.indir-btn:disabled { opacity: 0.5; transform: none; cursor: not-allowed; }
+.mesaj-kutusu {
+  padding: 14px 18px; border-radius: 12px; font-size: 14px;
+  margin-top: 16px; display: none;
+}
+.mesaj-kutusu.aktif { display: block; }
+.mesaj-kutusu.basari { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: var(--basari); }
+.mesaj-kutusu.hata { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--hata); }
+.mesaj-kutusu.bilgi { background: var(--glow); border: 1px solid rgba(99,102,241,0.3); color: var(--vurgu); }
+.yukleniyor { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: dondur 0.8s linear infinite; }
+@keyframes dondur { to { transform: rotate(360deg); } }
+.ozellikler {
+  max-width: 1100px; margin: 80px auto 0;
+  padding: 0 24px;
+}
+.bolum-baslik { text-align: center; margin-bottom: 48px; }
+.bolum-baslik h2 { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
+.bolum-baslik p { color: var(--yazi2); margin-top: 10px; }
+.ozellik-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.ozellik-kart {
+  background: var(--bg2); border: 1px solid var(--sinir);
+  border-radius: 16px; padding: 28px;
+  transition: all 0.3s;
+}
+.ozellik-kart:hover { border-color: var(--vurgu); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.2); }
+.ozellik-ikon { font-size: 28px; margin-bottom: 16px; }
+.ozellik-kart h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+.ozellik-kart p { font-size: 14px; color: var(--yazi2); line-height: 1.6; }
+.sss { max-width: 760px; margin: 80px auto; padding: 0 24px; }
+.sss-madde {
+  background: var(--bg2); border: 1px solid var(--sinir);
+  border-radius: 14px; margin-bottom: 12px; overflow: hidden;
+}
+.sss-soru {
+  width: 100%; padding: 20px 24px; font-size: 15px; font-weight: 500;
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  transition: background 0.2s; border: none; background: transparent;
+  color: inherit; text-align: left; font-family: inherit;
+}
+.sss-soru:hover { background: var(--kart); }
+.sss-ok { transition: transform 0.3s; color: var(--vurgu); font-size: 20px; }
+.sss-madde.acik .sss-ok { transform: rotate(180deg); }
+.sss-cevap { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s; }
+.sss-madde.acik .sss-cevap { max-height: 200px; }
+.sss-cevap p { padding: 0 24px 20px; font-size: 14px; color: var(--yazi2); line-height: 1.7; }
+footer {
+  border-top: 1px solid var(--sinir); padding: 40px 24px;
+  text-align: center; color: var(--yazi2); font-size: 14px; margin-top: 80px;
+}
+footer .footer-marka { font-size: 18px; font-weight: 700; color: var(--yazi); margin-bottom: 8px; }
+footer .footer-marka span { color: var(--vurgu); }
+.indir-link-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--basari), #16a34a);
+  color: white; padding: 14px 28px; border-radius: 12px;
+  text-decoration: none; font-weight: 600; font-size: 15px;
+  margin-top: 16px; transition: all 0.2s;
+}
+.indir-link-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(34,197,94,0.35); }
+@media (max-width: 600px) {
+  .url-giris-satiri { flex-direction: column; }
+  .medya-bilgi { flex-direction: column; }
+  .medya-bilgi img { width: 100%; height: 160px; }
+  .kahraman { padding: 60px 20px 32px; }
+}
+</style>
+</head>
+<body>
+<div class="agkesit"></div>
+<header>
+  <div class="header-ic">
+    <a href="/" class="logo">
+      <div class="logo-simge">▼</div>
+      <span class="logo-yazi"><span>RABELS</span> Video İndirici</span>
+    </a>
+    <button class="tema-btn" id="temaDugmesi" type="button">☀️</button>
+  </div>
+</header>
+
+<main>
+  <section class="kahraman">
+    <div class="kahraman-rozet">✦ Ücretsiz · Kayıtsız · Hızlı</div>
+    <h1>Video İndirmek<br><span>Hiç Bu Kadar Kolay</span> Olmamıştı</h1>
+    <p>YouTube, Instagram, TikTok ve Twitter'dan video veya ses indirin.<br>Kayıt olmadan, üyelik olmadan, saniyeler içinde.</p>
+  </section>
+
+  <div class="indirme-kutusu" style="max-width:760px;margin:0 auto 0;padding:28px 28px;">
+    <div class="url-giris-satiri">
+      <input type="url" class="url-giris" id="urlGiris" placeholder="Bağlantıyı buraya yapıştırın..." autocomplete="off" spellcheck="false">
+      <button class="analiz-btn" id="analizBtn" type="button">Analiz Et</button>
+    </div>
+    <div class="platform-satirlar">
+      <span class="platform-etiket">▶ YouTube</span>
+      <span class="platform-etiket">📷 Instagram</span>
+      <span class="platform-etiket">🐦 Twitter/X</span>
+      <span class="platform-etiket">♪ TikTok</span>
+      <span class="platform-etiket">⚡ Shorts</span>
+    </div>
+
+    <div class="sonuc-alani" id="sonucAlani">
+      <div class="medya-bilgi" id="medyaBilgi"></div>
+
+      <div class="format-baslik">Video Formatları</div>
+      <div class="format-grid" id="videoFormatlar"></div>
+
+      <div class="format-baslik">Ses Formatları</div>
+      <div class="format-grid" id="sesFormatlar"></div>
+
+      <button class="indir-btn" id="indirBtn" type="button" disabled>
+        <span>↓</span> Format Seçin
+      </button>
+      <div id="indirLink"></div>
+    </div>
+
+    <div class="mesaj-kutusu" id="mesajKutusu"></div>
+  </div>
+
+  <section class="ozellikler">
+    <div class="bolum-baslik">
+      <h2>Neden Rabels?</h2>
+      <p>Hız, güvenlik ve sadelik bir arada.</p>
+    </div>
+    <div class="ozellik-grid">
+      <div class="ozellik-kart">
+        <div class="ozellik-ikon">⚡</div>
+        <h3>Anında İndirme</h3>
+        <p>Bağlantıyı yapıştırın, formatı seçin, indirin. Üyelik, kayıt veya bekleme yok.</p>
+      </div>
+      <div class="ozellik-kart">
+        <div class="ozellik-ikon">🛡️</div>
+        <h3>Güvenli Altyapı</h3>
+        <p>Verileriniz saklanmaz. İndirilen dosyalar otomatik olarak belirli süre sonra temizlenir.</p>
+      </div>
+      <div class="ozellik-kart">
+        <div class="ozellik-ikon">🎵</div>
+        <h3>MP3 & WAV Desteği</h3>
+        <p>Videolardan yüksek kaliteli ses dosyası çıkartın. MP3 veya WAV formatında indirin.</p>
+      </div>
+      <div class="ozellik-kart">
+        <div class="ozellik-ikon">📱</div>
+        <h3>Her Cihazda Çalışır</h3>
+        <p>Telefon, tablet veya bilgisayar — tüm cihazlarda sorunsuz çalışan modern arayüz.</p>
+      </div>
+      <div class="ozellik-kart">
+        <div class="ozellik-ikon">🎬</div>
+        <h3>Çoklu Platform</h3>
+        <p>YouTube, Instagram, TikTok ve Twitter/X desteği tek bir arayüzde toplanmış.</p>
+      </div>
+      <div class="ozellik-kart">
+        <div class="ozellik-ikon">✨</div>
+        <h3>Kalite Seçeneği</h3>
+        <p>360p'den 1080p'ye kadar istediğiniz kalitede video indirin.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sss">
+    <div class="bolum-baslik">
+      <h2>Sık Sorulan Sorular</h2>
+    </div>
+    <div class="sss-madde">
+      <button class="sss-soru" type="button" aria-expanded="false">
+        Üyelik veya kayıt gerekiyor mu?
+        <span class="sss-ok">⌄</span>
+      </button>
+      <div class="sss-cevap"><p>Hayır. Rabels Video İndirici'yi kullanmak için herhangi bir hesap oluşturmanız veya giriş yapmanız gerekmez. Bağlantıyı yapıştırın ve indirin.</p></div>
+    </div>
+    <div class="sss-madde">
+      <button class="sss-soru" type="button" aria-expanded="false">
+        Hangi platformlar destekleniyor?
+        <span class="sss-ok">⌄</span>
+      </button>
+      <div class="sss-cevap"><p>YouTube, YouTube Shorts, Instagram, Twitter/X ve TikTok platformlarından video indirme desteklenmektedir.</p></div>
+    </div>
+    <div class="sss-madde">
+      <button class="sss-soru" type="button" aria-expanded="false">
+        İndirdiğim dosyalar saklanıyor mu?
+        <span class="sss-ok">⌄</span>
+      </button>
+      <div class="sss-cevap"><p>İndirilen dosyalar sunucuda geçici olarak tutulur ve belirli bir süre sonra otomatik olarak silinir. Kişisel verileriniz saklanmaz.</p></div>
+    </div>
+    <div class="sss-madde">
+      <button class="sss-soru" type="button" aria-expanded="false">
+        MP3 kalitesi nasıl?
+        <span class="sss-ok">⌄</span>
+      </button>
+      <div class="sss-cevap"><p>Ses dosyaları kaynaktan mevcut en yüksek kalitede çıkartılır. Kaynağın kalitesine bağlı olarak genellikle 128-320 kbps arasında olur.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-marka"><span>RABELS</span> Video İndirici</div>
+  <p>© 2026 Rabels · Tüm hakları saklıdır</p>
+</footer>
+
+<script>
+const seciliFormat = { format: null, kalite: null, tur: null };
+let analizVeri = null;
+
+function temaToggle() {
+  const html = document.documentElement;
+  const yeni = html.dataset.tema === 'karanlik' ? 'aydinlik' : 'karanlik';
+  html.dataset.tema = yeni;
+  document.getElementById('temaDugmesi').textContent = yeni === 'karanlik' ? '☀️' : '🌙';
+  localStorage.setItem('tema', yeni);
+}
+
+(function() {
+  const k = localStorage.getItem('tema');
+  if (k) {
+    document.documentElement.dataset.tema = k;
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('temaDugmesi').textContent = k === 'karanlik' ? '☀️' : '🌙';
+    });
+  }
+})();
+
+function mesajGoster(tip, metin) {
+  const k = document.getElementById('mesajKutusu');
+  k.className = 'mesaj-kutusu aktif ' + tip;
+  k.textContent = metin;
+}
+
+function mesajGizle() {
+  document.getElementById('mesajKutusu').className = 'mesaj-kutusu';
+}
+
+async function analizBaslat() {
+  const url = document.getElementById('urlGiris').value.trim();
+  if (!url) return mesajGoster('hata', 'Lütfen bir bağlantı girin.');
+
+  const btn = document.getElementById('analizBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="yukleniyor"></span>';
+  mesajGizle();
+  document.getElementById('sonucAlani').classList.remove('aktif');
+  document.getElementById('indirLink').innerHTML = '';
+
+  try {
+    const yanit = await fetch('/indir/analiz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    const veri = await yanit.json();
+
+    if (!veri.basari) {
+      mesajGoster('hata', veri.mesaj || 'Analiz başarısız.');
+    } else {
+      analizVeri = veri.veri;
+      goruntulemedyaBilgi(veri.veri);
+      goruntuleFormatlar(veri.veri.formatlar);
+      document.getElementById('sonucAlani').classList.add('aktif');
+    }
+  } catch {
+    mesajGoster('hata', 'Sunucu ile bağlantı kurulamadı.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Analiz Et';
+  }
+}
+
+function goruntulemedyaBilgi(veri) {
+  const sn = veri.sure;
+  const sure = sn ? Math.floor(sn/60) + ':' + String(sn%60).padStart(2,'0') : '';
+  document.getElementById('medyaBilgi').innerHTML = `
+    ${veri.kucukResim ? `<img src="${veri.kucukResim}" alt="önizleme" class="medya-onizleme">` : ''}
+    <div class="medya-bilgi-yazi">
+      <h3>${escHtml(veri.baslik)}</h3>
+      <div class="meta">
+        <span class="platform-rozet">${escHtml(veri.platform.ad)}</span>
+        ${sure ? `<span>⏱ ${sure}</span>` : ''}
+      </div>
+    </div>`;
+}
+
+function goruntuleFormatlar(formatlar) {
+  const video = formatlar.filter(f => f.tur === 'video');
+  const ses = formatlar.filter(f => f.tur === 'ses');
+  const videoAlani = document.getElementById('videoFormatlar');
+  const sesAlani = document.getElementById('sesFormatlar');
+
+  videoAlani.innerHTML = video.map(f =>
+    `<button class="format-kart" type="button" data-format="mp4" data-kalite="${f.kalite}" data-tur="video">
+      <div class="format-ad">MP4</div>
+      <div class="format-tur">${f.kalite}</div>
+    </button>`).join('') || '<p style="color:var(--yazi2);font-size:14px">Video formatı bulunamadı.</p>';
+
+  sesAlani.innerHTML = ses.map(f =>
+    `<button class="format-kart" type="button" data-format="${f.format}" data-kalite="" data-tur="ses">
+      <div class="format-ad">${f.format.toUpperCase()}</div>
+      <div class="format-tur">Ses</div>
+    </button>`).join('');
+
+  [...videoAlani.querySelectorAll('.format-kart'), ...sesAlani.querySelectorAll('.format-kart')].forEach(kart => {
+    kart.addEventListener('click', () => formatKartTiklandi(kart));
+  });
+}
+
+function formatKartTiklandi(el) {
+  formatSec(el, el.dataset.format, el.dataset.kalite || '', el.dataset.tur);
+}
+
+function formatSec(el, format, kalite, tur) {
+  document.querySelectorAll('.format-kart').forEach(k => k.classList.remove('secili'));
+  el.classList.add('secili');
+  seciliFormat.format = format;
+  seciliFormat.kalite = kalite;
+  seciliFormat.tur = tur;
+  const btn = document.getElementById('indirBtn');
+  btn.disabled = false;
+  btn.innerHTML = `<span>↓</span> ${format.toUpperCase()}${kalite ? ' · ' + kalite : ''} İndir`;
+  document.getElementById('indirLink').innerHTML = '';
+}
+
+async function indirmeBaslat() {
+  if (!seciliFormat.format) return;
+  const url = document.getElementById('urlGiris').value.trim();
+  const btn = document.getElementById('indirBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="yukleniyor"></span> İndiriliyor...';
+  mesajGoster('bilgi', 'İndirme işlemi başlatıldı. Lütfen bekleyin...');
+  document.getElementById('indirLink').innerHTML = '';
+
+  try {
+    const yanit = await fetch('/indir/baslat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, format: seciliFormat.format, kalite: seciliFormat.kalite })
+    });
+    const veri = await yanit.json();
+
+    if (!veri.basari) {
+      mesajGoster('hata', veri.mesaj || 'İndirme başarısız.');
+    } else {
+      mesajGoster('basari', 'Dosyanız hazır! Aşağıdaki butona tıklayın.');
+      document.getElementById('indirLink').innerHTML =
+        `<a class="indir-link-btn" href="/indir/dosya/${veri.indirmeId}/${veri.format}" download>
+          ↓ Dosyayı İndir (${veri.format.toUpperCase()})
+        </a>`;
+    }
+  } catch {
+    mesajGoster('hata', 'Sunucu ile bağlantı kurulamadı.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<span>↓</span> ${seciliFormat.format.toUpperCase()}${seciliFormat.kalite ? ' · ' + seciliFormat.kalite : ''} İndir`;
+  }
+}
+
+function sssToggle(el) {
+  const madde = el.parentElement;
+  const acik = madde.classList.toggle('acik');
+  el.setAttribute('aria-expanded', acik ? 'true' : 'false');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const urlGiris = document.getElementById('urlGiris');
+  const analizBtn = document.getElementById('analizBtn');
+  const indirBtn = document.getElementById('indirBtn');
+  const temaDugmesi = document.getElementById('temaDugmesi');
+
+  temaDugmesi?.addEventListener('click', temaToggle);
+  analizBtn?.addEventListener('click', analizBaslat);
+  indirBtn?.addEventListener('click', indirmeBaslat);
+
+  urlGiris?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') analizBaslat();
+  });
+
+  document.querySelectorAll('.sss-soru').forEach(soru => {
+    soru.addEventListener('click', () => sssToggle(soru));
+  });
+
+
+  document.addEventListener('error', e => {
+    if (e.target instanceof HTMLImageElement && e.target.classList.contains('medya-onizleme')) {
+      e.target.style.display = 'none';
+    }
+  }, true);
+});
+</script>
+</body>
+</html>
