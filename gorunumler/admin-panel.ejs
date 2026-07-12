@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="tr" data-tema="karanlik">
+<html lang="tr" data-tema="aydinlik">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Paneli · Rabels</title>
+<title>Admin Paneli · OzgurAPP</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--sinir:rgba(255,255,255,0.08);--yazi:#f0f0f8;--yazi2:#8888aa;--vurgu:#6366f1;--basari:#22c55e;--hata:#ef4444;--glow:rgba(99,102,241,0.12)}
+:root{--bg:#f7f5f2;--bg2:#fffdfa;--bg3:#efebe6;--sinir:rgba(61,48,39,0.14);--yazi:#2d2926;--yazi2:#70675f;--vurgu:#c45d3e;--basari:#3d7c55;--hata:#b64d3b;--glow:rgba(196,93,62,0.11)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--yazi);min-height:100vh}
 .kenar{width:240px;background:var(--bg2);border-right:1px solid var(--sinir);position:fixed;top:0;left:0;bottom:0;padding:24px 0;display:flex;flex-direction:column}
@@ -22,6 +22,76 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--yazi);min-he
 .istat-kart .etiket{font-size:13px;color:var(--yazi2);margin-bottom:8px}
 .istat-kart .deger{font-size:28px;font-weight:700;letter-spacing:-1px}
 .istat-kart .vurgu{color:var(--vurgu)}
+.sistem-ust{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+.sistem-ust h3{margin:0}
+.yenile-btn{border:1px solid var(--sinir);border-radius:8px;padding:8px 12px;background:var(--bg3);color:var(--yazi);font:inherit;font-size:12px;cursor:pointer}
+.yenile-btn:hover{border-color:var(--vurgu);color:var(--vurgu)}
+.yenile-btn:disabled{opacity:.6;cursor:wait}
+.sistem-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.sistem-durum{padding:14px;border:1px solid var(--sinir);border-radius:10px;background:var(--bg3)}
+.sistem-durum-ust{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.sistem-durum-baslik{font-size:13px;font-weight:600}
+.sistem-rozet{padding:3px 7px;border-radius:999px;font-size:10px;font-weight:600}
+.sistem-rozet.iyi{background:rgba(34,197,94,.12);color:var(--basari)}
+.sistem-rozet.uyari{background:rgba(234,179,8,.14);color:#92700a}
+.sistem-rozet.hata{background:rgba(239,68,68,.12);color:var(--hata)}
+.sistem-durum-detay{color:var(--yazi2);font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5;word-break:break-word}
+.sistem-zaman{margin-top:12px;color:var(--yazi2);font-size:11px}
+.istatistik-ust{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+.istatistik-ust h3{margin:0}
+.aralik-sec{border:1px solid var(--sinir);border-radius:8px;padding:8px 10px;background:var(--bg3);color:var(--yazi);font:inherit;font-size:12px}
+.donem-kartlari{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px}
+.donem-kart{padding:14px;border-radius:10px;background:var(--bg3);border:1px solid var(--sinir)}
+.donem-kart .etiket{color:var(--yazi2);font-size:11px;margin-bottom:6px}
+.donem-kart .deger{font-size:22px;font-weight:700}
+.donem-kart .deger.basari{color:var(--basari)}
+.grafik-baslik{display:flex;justify-content:space-between;gap:10px;color:var(--yazi2);font-size:12px;margin-bottom:10px}
+.gunluk-grafik{display:grid;grid-template-columns:repeat(var(--gun-sayisi),minmax(12px,1fr));align-items:end;gap:5px;height:170px;padding:0 2px;border-bottom:1px solid var(--sinir)}
+.grafik-gun{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:100%;min-width:0}
+.grafik-sutun{width:100%;max-width:28px;min-height:2px;border-radius:5px 5px 0 0;background:var(--vurgu);transition:height .25s ease}
+.grafik-gun small{color:var(--yazi2);font-size:9px;white-space:nowrap;transform:rotate(-35deg);transform-origin:top center}
+.istatistik-alt{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.dagilim-liste{display:grid;gap:8px}
+.dagilim-satir{display:grid;grid-template-columns:minmax(80px,1fr) 2fr auto;align-items:center;gap:8px;font-size:12px}
+.dagilim-etiket{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--yazi2)}
+.dagilim-cubuk{height:6px;border-radius:999px;background:var(--sinir);overflow:hidden}
+.dagilim-dolgu{height:100%;border-radius:inherit;background:var(--vurgu)}
+.hata-ust{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.hata-ust h3{margin:0}
+.hata-bolumu.kapali #hataIcerigi{display:none}
+.hata-toggle{border:1px solid var(--sinir);border-radius:8px;padding:7px 10px;background:var(--bg3);color:var(--yazi2);font:inherit;font-size:12px;cursor:pointer}
+.hata-toggle:hover{border-color:var(--vurgu);color:var(--vurgu)}
+.hata-filtre{border:1px solid var(--sinir);border-radius:8px;padding:8px 10px;background:var(--bg3);color:var(--yazi);font:inherit;font-size:12px}
+.hata-gruplar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.hata-grup{border:1px solid var(--sinir);border-radius:8px;padding:7px 10px;background:var(--bg3);color:var(--yazi2);font-size:11px}
+.hata-grup strong{color:var(--hata);margin-left:4px}
+.hata-detay{max-width:560px;white-space:normal;word-break:break-word;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.45}
+.hata-zaman{white-space:nowrap;color:var(--yazi2);font-family:'JetBrains Mono',monospace;font-size:11px}
+.aktif-indirme-listesi{display:grid;gap:8px}
+.aktif-indirme{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:12px;border:1px solid var(--sinir);border-radius:10px;background:var(--bg3)}
+.aktif-indirme-baslik{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:600}
+.aktif-indirme-meta{margin-top:5px;color:var(--yazi2);font-size:11px}
+.aktif-indirme-durum{display:flex;align-items:center;gap:7px;color:var(--vurgu);font-size:11px;white-space:nowrap}
+.aktif-indirme-nokta{width:7px;height:7px;border-radius:50%;background:var(--vurgu);animation:aktifNokta 1.1s ease-in-out infinite}
+.aktif-indirme.tamamlandi .aktif-indirme-durum{color:var(--basari)}
+.aktif-indirme.hata .aktif-indirme-durum{color:var(--hata)}
+@keyframes aktifNokta{50%{opacity:.35;transform:scale(.75)}}
+@media(prefers-reduced-motion:reduce){.aktif-indirme-nokta{animation:none}}
+@media(max-width:680px){.istatistik-ust{align-items:flex-start;flex-direction:column}.istatistik-alt{grid-template-columns:1fr}.gunluk-grafik{gap:2px}}
+.ayarlar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.ayar-alani{display:flex;flex-direction:column;gap:7px}
+.ayar-alani label{color:var(--yazi2);font-size:12px}
+.ayar-alani input,.ayar-alani select{border:1px solid var(--sinir);border-radius:8px;padding:10px;background:var(--bg3);color:var(--yazi);font:inherit;font-size:13px}
+.ayar-bilgi{margin-top:12px;color:var(--yazi2);font-size:11px}
+.guvenlik-olaylari{max-height:280px;overflow:auto}
+.guvenlik-olaylari table{min-width:560px}
+.guvenlik-basarili{color:var(--basari)}
+.kullanim-ozet{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+.kullanim-kart{padding:13px;border:1px solid var(--sinir);border-radius:10px;background:var(--bg3)}
+.kullanim-kart span{display:block;color:var(--yazi2);font-size:11px;margin-bottom:5px}.kullanim-kart strong{font-size:21px}
+.saat-grafik{display:grid;grid-template-columns:repeat(24,1fr);align-items:end;gap:3px;height:130px;border-bottom:1px solid var(--sinir);padding-top:12px}
+.saat-sutun{min-height:2px;border-radius:3px 3px 0 0;background:var(--vurgu);position:relative}.saat-sutun:hover{background:var(--basari)}
+.saat-sutun::after{content:attr(data-saat);position:absolute;top:100%;left:50%;transform:translateX(-50%);font-size:8px;color:var(--yazi2);margin-top:5px}
 .bolum{background:var(--bg2);border:1px solid var(--sinir);border-radius:14px;padding:24px;margin-bottom:20px}
 .bolum h3{font-size:15px;font-weight:600;margin-bottom:16px;color:var(--yazi2)}
 table{width:100%;border-collapse:collapse;font-size:13px}
@@ -35,7 +105,7 @@ tr:last-child td{border-bottom:none}
 .giris-alani input{background:var(--bg3);border:1px solid var(--sinir);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--yazi);font-family:'Sora',sans-serif;outline:none;transition:border-color 0.2s}
 .giris-alani input:focus{border-color:var(--vurgu)}
 .kaydet-btn{background:var(--vurgu);color:white;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;align-self:flex-start;transition:all 0.2s}
-.kaydet-btn:hover{box-shadow:0 6px 20px rgba(99,102,241,0.4)}
+.kaydet-btn:hover{box-shadow:0 6px 14px rgba(196,93,62,0.22)}
 .mesaj{padding:10px 14px;border-radius:8px;font-size:13px;display:none}
 .mesaj.aktif{display:block}
 .mesaj.basari{background:rgba(34,197,94,0.1);color:var(--basari);border:1px solid rgba(34,197,94,0.3)}
@@ -45,7 +115,7 @@ tr:last-child td{border-bottom:none}
 </head>
 <body>
 <nav class="kenar">
-  <div class="kenar-logo"><strong><span>RABELS</span> Admin</strong><br><small style="color:var(--yazi2);font-size:12px">Hoş geldiniz, <%= adminAdi %></small></div>
+  <div class="kenar-logo"><strong><span>OzgurAPP</span> Admin</strong><br><small style="color:var(--yazi2);font-size:12px">Hoş geldiniz, <%= adminAdi %></small></div>
   <a class="kenar-link aktif" href="/admin/panel">📊 Dashboard</a>
   <a class="kenar-link" href="/admin/cikis" class="cikis" style="color:#ef4444;margin-top:auto">⬡ Çıkış Yap</a>
 </nav>
@@ -71,6 +141,78 @@ tr:last-child td{border-bottom:none}
     <div class="istat-kart">
       <div class="etiket">En Çok Format</div>
       <div class="deger" style="font-size:18px"><%= formatIstatistik[0]?.format?.toUpperCase() || '-' %></div>
+    </div>
+  </div>
+
+  <div class="bolum">
+    <div class="sistem-ust">
+      <h3>Sistem Sağlık Durumu</h3>
+      <button class="yenile-btn" id="sistemDurumuYenile" type="button">↻ Yenile</button>
+    </div>
+    <div class="sistem-grid" id="sistemDurumuGrid" aria-live="polite">
+      <div class="sistem-durum-detay">Kontroller çalıştırılıyor...</div>
+    </div>
+    <div class="sistem-zaman" id="sistemDurumuZaman"></div>
+  </div>
+
+  <div class="bolum">
+    <div class="sistem-ust">
+      <h3>Aktif İndirmeler</h3>
+      <span class="sistem-zaman" id="aktifIndirmeZamani"></span>
+    </div>
+    <div class="aktif-indirme-listesi" id="aktifIndirmeListesi" aria-live="polite">
+      <div class="sistem-durum-detay">Aktif işler kontrol ediliyor...</div>
+    </div>
+  </div>
+
+  <div class="bolum">
+    <div class="sistem-ust"><h3>Uygulama Ayarları</h3><span class="sistem-zaman">Canlı ayarlar</span></div>
+    <div class="ayarlar-grid">
+      <div class="ayar-alani"><label for="ayarMaksVideo">Maksimum playlist videosu</label><input id="ayarMaksVideo" type="number" min="1" max="50" inputmode="numeric"></div>
+      <div class="ayar-alani"><label for="ayarSaklama">Geçici dosya saklama süresi</label><select id="ayarSaklama"><option value="300000">5 dakika</option><option value="1800000">30 dakika</option><option value="3600000">1 saat</option><option value="21600000">6 saat</option><option value="86400000">24 saat</option></select></div>
+      <div class="ayar-alani"><label for="ayarKalite">Varsayılan video kalitesi</label><select id="ayarKalite"><option value="360p">360p</option><option value="480p">480p</option><option value="720p">720p</option><option value="1080p">1080p</option></select></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:14px"><button class="kaydet-btn" id="ayarKaydetBtn" type="button">Ayarları kaydet</button><div class="mesaj" id="ayarMesaj"></div></div>
+    <div class="ayar-bilgi">Playlist limiti ve saklama süresi yeni işlemlerde uygulanır. Saklama süresi 5 dakika ile 24 saat arasındadır.</div>
+  </div>
+
+  <div class="bolum">
+    <div class="istatistik-ust"><h3>Kullanım Analizi</h3><select class="aralik-sec" id="kullanimAralik" aria-label="Kullanım analiz dönemi"><option value="7">Son 7 gün</option><option value="30" selected>Son 30 gün</option><option value="90">Son 90 gün</option></select></div>
+    <div class="kullanim-ozet" id="kullanimOzet"><div class="sistem-durum-detay">Analiz yükleniyor...</div></div>
+    <div class="grafik-baslik"><span>Yoğunluk saatleri</span><span id="kullanimYogunSaat"></span></div>
+    <div class="saat-grafik" id="saatGrafik" aria-label="Saatlik kullanım grafiği"></div>
+  </div>
+
+  <div class="bolum">
+    <div class="hata-ust"><h3>Admin Güvenlik Olayları</h3><button class="hata-toggle" id="guvenlikToggle" type="button" aria-expanded="false" aria-controls="guvenlikIcerigi">Göster</button></div>
+    <div id="guvenlikIcerigi" hidden>
+      <div class="guvenlik-olaylari"><table><thead><tr><th>Kullanıcı</th><th>Olay</th><th>Durum</th><th>Zaman</th></tr></thead><tbody id="guvenlikOlayListesi"><tr><td colspan="4" style="color:var(--yazi2)">Olaylar yükleniyor...</td></tr></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="bolum">
+    <div class="istatistik-ust">
+      <h3>Dönem İstatistikleri</h3>
+      <select class="aralik-sec" id="istatistikAralik" aria-label="İstatistik dönemi">
+        <option value="7">Son 7 gün</option>
+        <option value="30">Son 30 gün</option>
+        <option value="90">Son 90 gün</option>
+      </select>
+    </div>
+    <div class="donem-kartlari" id="donemKartlari" aria-live="polite">
+      <div class="sistem-durum-detay">İstatistikler yükleniyor...</div>
+    </div>
+    <div class="grafik-baslik"><span>Günlük işlemler</span><span id="istatistikDonemEtiketi"></span></div>
+    <div class="gunluk-grafik" id="gunlukGrafik" style="--gun-sayisi:7" aria-label="Günlük indirme grafiği"></div>
+    <div class="istatistik-alt">
+      <div>
+        <div class="grafik-baslik"><span>Platform dağılımı</span></div>
+        <div class="dagilim-liste" id="platformDagilimi"></div>
+      </div>
+      <div>
+        <div class="grafik-baslik"><span>Format dağılımı</span></div>
+        <div class="dagilim-liste" id="formatDagilimi"></div>
+      </div>
     </div>
   </div>
 
@@ -101,15 +243,28 @@ tr:last-child td{border-bottom:none}
     </table>
   </div>
 
-  <div class="bolum">
-    <h3>Son Hatalar</h3>
-    <table>
-      <tr><th>Mesaj</th><th>Yol</th></tr>
-      <% hatalar.forEach(h => { %>
-      <tr><td style="color:var(--hata)"><%= h.mesaj %></td><td><%= h.yol %></td></tr>
-      <% }) %>
-      <% if (!hatalar.length) { %><tr><td colspan="2" style="color:var(--yazi2)">Hata kaydı yok</td></tr><% } %>
-    </table>
+  <div class="bolum hata-bolumu kapali" id="hataBolumu">
+    <div class="hata-ust">
+      <h3>Hata Merkezi</h3>
+      <div style="display:flex;align-items:center;gap:8px">
+        <select class="hata-filtre" id="hataFiltresi" aria-label="Hata kategorisi">
+          <option value="Tümü">Tüm kategoriler</option>
+          <option value="yt-dlp">yt-dlp</option>
+          <option value="Bağlantı">Bağlantı</option>
+          <option value="Format / Dosya">Format / Dosya</option>
+          <option value="Sunucu">Sunucu</option>
+          <option value="Diğer">Diğer</option>
+        </select>
+        <button class="hata-toggle" id="hataToggle" type="button" aria-expanded="false" aria-controls="hataIcerigi">Göster</button>
+      </div>
+    </div>
+    <div id="hataIcerigi">
+      <div class="hata-gruplar" id="hataGruplari" aria-live="polite"></div>
+      <table>
+        <thead><tr><th>Kategori</th><th>Mesaj</th><th>Yol</th><th>Zaman</th></tr></thead>
+        <tbody id="hataListesi"><tr><td colspan="4" style="color:var(--yazi2)">Hatalar yükleniyor...</td></tr></tbody>
+      </table>
+    </div>
   </div>
 
   <div class="bolum">
@@ -125,6 +280,225 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <script>
+const sistemDurumuAlanlari = [
+  ['node', 'Node.js'],
+  ['javascriptRuntime', 'JavaScript runtime'],
+  ['ytDlp', 'yt-dlp'],
+  ['ffmpeg', 'FFmpeg'],
+  ['geciciKlasor', 'Geçici klasör'],
+  ['veritabani', 'Veritabanı']
+];
+
+function sistemDurumuMetni(durum) {
+  return durum === 'iyi' ? 'Çalışıyor' : (durum === 'uyari' ? 'Uyarı' : 'Hata');
+}
+
+function sistemDurumuDetayi(anahtar, veri) {
+  if (anahtar === 'geciciKlasor') return `${veri.mesaj} ${veri.dosyaSayisi} dosya · ${veri.boyutMb} MB`;
+  return [veri.surum, veri.mesaj].filter(Boolean).join(' · ');
+}
+
+function htmlGuvenli(deger) {
+  return String(deger ?? '').replace(/[&<>"']/g, karakter => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[karakter]);
+}
+
+async function sistemDurumunuGetir() {
+  const grid = document.getElementById('sistemDurumuGrid');
+  const zaman = document.getElementById('sistemDurumuZaman');
+  const buton = document.getElementById('sistemDurumuYenile');
+  if (buton) buton.disabled = true;
+  grid.innerHTML = '<div class="sistem-durum-detay">Kontroller çalıştırılıyor...</div>';
+  try {
+    const yanit = await fetch('/admin/sistem-durumu', { headers: { Accept: 'application/json' } });
+    const veri = await yanit.json();
+    if (!yanit.ok || !veri.basari) throw new Error(veri.mesaj || 'Kontroller alınamadı.');
+    grid.innerHTML = sistemDurumuAlanlari.map(([anahtar, baslik]) => {
+      const durum = veri[anahtar] || { durum: 'hata', mesaj: 'Bilgi alınamadı.' };
+      return `<div class="sistem-durum"><div class="sistem-durum-ust"><span class="sistem-durum-baslik">${htmlGuvenli(baslik)}</span><span class="sistem-rozet ${htmlGuvenli(durum.durum)}">${htmlGuvenli(sistemDurumuMetni(durum.durum))}</span></div><div class="sistem-durum-detay">${htmlGuvenli(sistemDurumuDetayi(anahtar, durum))}</div></div>`;
+    }).join('');
+    zaman.textContent = `Son kontrol: ${new Date(veri.zaman).toLocaleString('tr-TR')}`;
+  } catch (hata) {
+    grid.innerHTML = `<div class="sistem-durum-detay" style="color:var(--hata)">${htmlGuvenli(hata.message || 'Sistem durumu alınamadı.')}</div>`;
+    zaman.textContent = '';
+  } finally {
+    if (buton) buton.disabled = false;
+  }
+}
+
+async function aktifIndirmeleriGetir() {
+  const liste = document.getElementById('aktifIndirmeListesi');
+  try {
+    const yanit = await fetch('/admin/aktif-indirmeler', { headers: { Accept: 'application/json' } });
+    const veri = await yanit.json();
+    if (!yanit.ok || !veri.basari) throw new Error(veri.mesaj || 'Aktif işler alınamadı.');
+    const kayitlar = [...(veri.aktif || []), ...(veri.sonlanan || []).slice(0, 3)];
+    if (!kayitlar.length) {
+      liste.innerHTML = '<div class="sistem-durum-detay">Şu anda aktif indirme yok.</div>';
+    } else {
+      liste.innerHTML = kayitlar.map(kayit => {
+        const sonlandi = kayit.durum !== 'isleniyor';
+        const durum = kayit.durum === 'tamamlandi' ? 'Tamamlandı' : (kayit.durum === 'hata' ? 'Hata' : 'İndiriliyor');
+        return `<div class="aktif-indirme ${htmlGuvenli(kayit.durum)}"><div><div class="aktif-indirme-baslik">${htmlGuvenli(kayit.baslik || 'Başlıksız video')}</div><div class="aktif-indirme-meta">${htmlGuvenli(kayit.platform || '-')} · ${htmlGuvenli(String(kayit.format || '').toUpperCase())}${kayit.kalite ? ` · ${htmlGuvenli(kayit.kalite)}` : ''} · ${kayit.gecenSaniye || 0} sn</div></div><div class="aktif-indirme-durum">${sonlandi ? '' : '<span class="aktif-indirme-nokta"></span>'}${durum}</div></div>`;
+      }).join('');
+    }
+    document.getElementById('aktifIndirmeZamani').textContent = `Son kontrol: ${new Date().toLocaleTimeString('tr-TR')}`;
+  } catch (hata) {
+    liste.innerHTML = `<div class="sistem-durum-detay" style="color:var(--hata)">${htmlGuvenli(hata.message || 'Aktif işler alınamadı.')}</div>`;
+  }
+}
+
+async function ayarlariGetir() {
+  try {
+    const yanit = await fetch('/admin/ayarlar', { headers: { Accept: 'application/json' } });
+    const veri = await yanit.json();
+    if (!yanit.ok || !veri.basari) throw new Error(veri.mesaj || 'Ayarlar alınamadı.');
+    document.getElementById('ayarMaksVideo').value = veri.ayarlar.maksTopluVideo;
+    document.getElementById('ayarSaklama').value = String(veri.ayarlar.geciciDosyaSuresi);
+    document.getElementById('ayarKalite').value = veri.ayarlar.varsayilanKalite;
+  } catch (hata) {
+    ayarMesajiGoster('hata2', hata.message || 'Ayarlar alınamadı.');
+  }
+}
+
+function ayarMesajiGoster(tur, metin) {
+  const mesaj = document.getElementById('ayarMesaj');
+  mesaj.className = `mesaj aktif ${tur}`;
+  mesaj.textContent = metin;
+}
+
+async function ayarlariKaydet() {
+  const buton = document.getElementById('ayarKaydetBtn');
+  buton.disabled = true;
+  try {
+    const yanit = await fetch('/admin/ayarlar', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ maksTopluVideo: Number(document.getElementById('ayarMaksVideo').value), geciciDosyaSuresi: Number(document.getElementById('ayarSaklama').value), varsayilanKalite: document.getElementById('ayarKalite').value })
+    });
+    const veri = await yanit.json();
+    if (!yanit.ok || !veri.basari) throw new Error(veri.mesaj || 'Ayarlar kaydedilemedi.');
+    ayarMesajiGoster('basari', veri.mesaj);
+  } catch (hata) {
+    ayarMesajiGoster('hata2', hata.message || 'Ayarlar kaydedilemedi.');
+  } finally {
+    buton.disabled = false;
+  }
+}
+
+async function guvenlikOlaylariniGetir() {
+  const liste = document.getElementById('guvenlikOlayListesi');
+  try {
+    const yanit = await fetch('/admin/guvenlik-olaylari', { headers: { Accept: 'application/json' } });
+    const veri = await yanit.json();
+    if (!yanit.ok || !veri.basari) throw new Error(veri.mesaj || 'Güvenlik olayları alınamadı.');
+    liste.innerHTML = veri.olaylar.length ? veri.olaylar.map(olay => `<tr><td>${htmlGuvenli(olay.kullanici || '-')}</td><td>${htmlGuvenli(olay.olay)}</td><td class="${olay.basarili ? 'guvenlik-basarili' : ''}">${olay.basarili ? 'Başarılı' : 'Başarısız'}</td><td class="hata-zaman">${new Date(Number(olay.zaman) * 1000).toLocaleString('tr-TR')}</td></tr>`).join('') : '<tr><td colspan="4" style="color:var(--yazi2)">Henüz güvenlik olayı yok.</td></tr>';
+  } catch (hata) {
+    liste.innerHTML = `<tr><td colspan="4" style="color:var(--hata)">${htmlGuvenli(hata.message || 'Olaylar alınamadı.')}</td></tr>`;
+  }
+}
+
+async function kullanimAnaliziniGetir() {
+  const aralik = document.getElementById('kullanimAralik').value;
+  const ozetAlani = document.getElementById('kullanimOzet');
+  try {
+    const yanit = await fetch(`/admin/kullanim-analizi?aralik=${encodeURIComponent(aralik)}`, { headers: { Accept: 'application/json' } });
+    const veri = await yanit.json();
+    if (!yanit.ok || !veri.basari) throw new Error(veri.mesaj || 'Kullanım analizi alınamadı.');
+    const ozet = veri.ozet;
+    ozetAlani.innerHTML = `<div class="kullanim-kart"><span>Arama</span><strong>${ozet.arama}</strong></div><div class="kullanim-kart"><span>Analiz</span><strong>${ozet.analiz}</strong></div><div class="kullanim-kart"><span>İndirme</span><strong>${ozet.indirme}</strong></div><div class="kullanim-kart"><span>Tekil ziyaretçi</span><strong>${ozet.tekilZiyaretci}</strong></div><div class="kullanim-kart"><span>Yoğun saat</span><strong>${htmlGuvenli(ozet.enYogunSaat)}</strong></div>`;
+    const saatler = veri.saatler || [];
+    const enYuksek = Math.max(...saatler.map(saat => saat.sayi), 1);
+    document.getElementById('saatGrafik').innerHTML = saatler.map(saat => `<span class="saat-sutun" data-saat="${saat.saat}" title="${saat.saat}:00 · ${saat.sayi} işlem" style="height:${Math.max(Math.round((saat.sayi / enYuksek) * 100), 2)}%"></span>`).join('');
+    document.getElementById('kullanimYogunSaat').textContent = `${veri.aralik} günlük dönem`;
+  } catch (hata) {
+    ozetAlani.innerHTML = `<div class="sistem-durum-detay" style="color:var(--hata)">${htmlGuvenli(hata.message || 'Analiz alınamadı.')}</div>`;
+  }
+}
+
+function guvenlikPaneliniDegistir() {
+  const icerik = document.getElementById('guvenlikIcerigi');
+  const buton = document.getElementById('guvenlikToggle');
+  const acik = icerik.hidden;
+  icerik.hidden = !acik;
+  buton.setAttribute('aria-expanded', String(acik));
+  buton.textContent = acik ? 'Gizle' : 'Göster';
+  if (acik) guvenlikOlaylariniGetir();
+}
+
+function dagilimGoster(kapsayiciId, liste) {
+  const kapsayici = document.getElementById(kapsayiciId);
+  if (!liste.length) {
+    kapsayici.innerHTML = '<span class="sistem-durum-detay">Bu dönemde veri yok.</span>';
+    return;
+  }
+  const enYuksek = Math.max(...liste.map(kayit => kayit.sayi), 1);
+  kapsayici.innerHTML = liste.map(kayit => `<div class="dagilim-satir"><span class="dagilim-etiket">${htmlGuvenli(String(kayit.etiket).toUpperCase())}</span><span class="dagilim-cubuk"><span class="dagilim-dolgu" style="width:${Math.round((kayit.sayi / enYuksek) * 100)}%"></span></span><strong>${kayit.sayi}</strong></div>`).join('');
+}
+
+function istatistikleriGoster(veri) {
+  const ozet = veri.ozet || {};
+  document.getElementById('donemKartlari').innerHTML = `
+    <div class="donem-kart"><div class="etiket">Toplam işlem</div><div class="deger">${ozet.toplam || 0}</div></div>
+    <div class="donem-kart"><div class="etiket">Başarılı indirme</div><div class="deger basari">${ozet.basarili || 0}</div></div>
+    <div class="donem-kart"><div class="etiket">Başarısız işlem</div><div class="deger" style="color:var(--hata)">${ozet.hatali || 0}</div></div>
+    <div class="donem-kart"><div class="etiket">Başarı oranı</div><div class="deger">%${ozet.basariOrani || 0}</div></div>
+    <div class="donem-kart"><div class="etiket">Tekil ziyaretçi</div><div class="deger">${ozet.tekilZiyaretci || 0}</div></div>`;
+  const gunluk = veri.gunluk || [];
+  const enYuksek = Math.max(...gunluk.map(gun => gun.toplam), 1);
+  const grafik = document.getElementById('gunlukGrafik');
+  grafik.style.setProperty('--gun-sayisi', Math.max(gunluk.length, 1));
+  grafik.innerHTML = gunluk.map(gun => `<div class="grafik-gun" title="${htmlGuvenli(gun.etiket)}: ${gun.toplam} işlem"><span class="grafik-sutun" style="height:${Math.max(Math.round((gun.toplam / enYuksek) * 100), 2)}%"></span><small>${htmlGuvenli(gun.etiket)}</small></div>`).join('');
+  document.getElementById('istatistikDonemEtiketi').textContent = `Son ${veri.aralik} gün`;
+  dagilimGoster('platformDagilimi', veri.platformlar || []);
+  dagilimGoster('formatDagilimi', veri.formatlar || []);
+}
+
+async function istatistikleriGetir() {
+  const aralik = document.getElementById('istatistikAralik').value;
+  const kartlar = document.getElementById('donemKartlari');
+  kartlar.innerHTML = '<div class="sistem-durum-detay">İstatistikler yükleniyor...</div>';
+  try {
+    const yanit = await fetch(`/admin/istatistikler?aralik=${encodeURIComponent(aralik)}`, { headers: { Accept: 'application/json' } });
+    const veri = await yanit.json();
+    if (!yanit.ok || !veri.basari) throw new Error(veri.mesaj || 'İstatistikler alınamadı.');
+    istatistikleriGoster(veri);
+  } catch (hata) {
+    kartlar.innerHTML = `<div class="sistem-durum-detay" style="color:var(--hata)">${htmlGuvenli(hata.message || 'İstatistikler alınamadı.')}</div>`;
+  }
+}
+
+function hatalariGoster(veri) {
+  const gruplar = document.getElementById('hataGruplari');
+  const liste = document.getElementById('hataListesi');
+  gruplar.innerHTML = Object.entries(veri.gruplar || {}).map(([kategori, sayi]) => `<span class="hata-grup">${htmlGuvenli(kategori)}<strong>${sayi}</strong></span>`).join('');
+  if (!veri.kayitlar?.length) {
+    liste.innerHTML = '<tr><td colspan="4" style="color:var(--yazi2)">Bu filtrede hata kaydı yok.</td></tr>';
+    return;
+  }
+  liste.innerHTML = veri.kayitlar.map(kayit => `<tr><td><span class="sistem-rozet hata">${htmlGuvenli(kayit.kategori)}</span></td><td class="hata-detay" style="color:var(--hata)">${htmlGuvenli(kayit.mesaj)}</td><td>${htmlGuvenli(kayit.yol || '-')}</td><td class="hata-zaman">${kayit.zaman ? new Date(Number(kayit.zaman) * 1000).toLocaleString('tr-TR') : '-'}</td></tr>`).join('');
+}
+
+async function hatalariGetir() {
+  const kategori = document.getElementById('hataFiltresi').value;
+  const liste = document.getElementById('hataListesi');
+  liste.innerHTML = '<tr><td colspan="4" style="color:var(--yazi2)">Hatalar yükleniyor...</td></tr>';
+  try {
+    const yanit = await fetch(`/admin/hatalar?kategori=${encodeURIComponent(kategori)}`, { headers: { Accept: 'application/json' } });
+    const veri = await yanit.json();
+    if (!yanit.ok || !veri.basari) throw new Error(veri.mesaj || 'Hatalar alınamadı.');
+    hatalariGoster(veri);
+  } catch (hata) {
+    liste.innerHTML = `<tr><td colspan="4" style="color:var(--hata)">${htmlGuvenli(hata.message || 'Hatalar alınamadı.')}</td></tr>`;
+  }
+}
+
+function hataMerkeziniDegistir() {
+  const bolum = document.getElementById('hataBolumu');
+  const buton = document.getElementById('hataToggle');
+  const kapali = bolum.classList.toggle('kapali');
+  buton.setAttribute('aria-expanded', String(!kapali));
+  buton.textContent = kapali ? 'Göster' : 'Gizle';
+}
+
 async function sifreDegistir() {
   const el = document.getElementById('sifreMesaj');
 
@@ -149,6 +523,20 @@ async function sifreDegistir() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sistemDurumuYenile')?.addEventListener('click', sistemDurumunuGetir);
+  sistemDurumunuGetir();
+  aktifIndirmeleriGetir();
+  window.setInterval(aktifIndirmeleriGetir, 3000);
+  document.getElementById('ayarKaydetBtn')?.addEventListener('click', ayarlariKaydet);
+  ayarlariGetir();
+  document.getElementById('guvenlikToggle')?.addEventListener('click', guvenlikPaneliniDegistir);
+  document.getElementById('kullanimAralik')?.addEventListener('change', kullanimAnaliziniGetir);
+  kullanimAnaliziniGetir();
+  document.getElementById('istatistikAralik')?.addEventListener('change', istatistikleriGetir);
+  istatistikleriGetir();
+  document.getElementById('hataFiltresi')?.addEventListener('change', hatalariGetir);
+  hatalariGetir();
+  document.getElementById('hataToggle')?.addEventListener('click', hataMerkeziniDegistir);
   document.getElementById('sifreGuncelleBtn')?.addEventListener('click', sifreDegistir);
 });
 </script>

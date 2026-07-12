@@ -59,15 +59,40 @@ uygulama.use(session({
   cookie: {
     httpOnly: true,
     maxAge: 8 * 60 * 60 * 1000,
-    sameSite: 'strict'
+    sameSite: 'strict',
+    // Local development uses HTTP even when NODE_ENV=production. Enable this
+    // only when the deployed site is actually served over HTTPS.
+    secure: process.env.SESSION_SECURE === 'true'
   }
 }));
 
-const genelLimit = rateLimit({ windowMs: 15 * 60 * 1000, max: 200 });
-const indirmeLimit = rateLimit({ windowMs: 60 * 1000, max: 5 });
-const adminLimit = rateLimit({ windowMs: 15 * 60 * 1000, max: 30 });
+const genelLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  // Admin dashboard widgets poll several endpoints periodically. They are
+  // already protected by the admin session and have their own login limit.
+  skip: req => Boolean(req.session?.adminGiris)
+});
+const indirmeLimit = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  skip: req => req.path === '/toplu'
+    || req.path === '/analiz'
+    || req.path === '/onizleme'
+    || req.path.startsWith('/onizleme/')
+    || req.path.startsWith('/dosya/')
+});
+const topluIndirmeLimit = rateLimit({ windowMs: 15 * 60 * 1000, max: 2 });
+const adminLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  // Keep login attempts rate-limited, but do not throttle an authenticated
+  // admin's health/statistics polling requests.
+  skip: req => Boolean(req.session?.adminGiris)
+});
 
 uygulama.use(genelLimit);
+uygulama.use('/indir/toplu', topluIndirmeLimit);
 uygulama.use('/indir', indirmeLimit);
 uygulama.use('/admin', adminLimit);
 
@@ -101,14 +126,28 @@ uygulama.use((req, res, next) => {
 
   cron.schedule('*/30 * * * *', () => temizlik.geciciDosyalariTemizle());
 
-  uygulama.listen(PORT, () => {
+  const sunucu = uygulama.listen(PORT, () => {
     console.log('');
     console.log('  ================================================');
-    console.log('   RABELS VIDEO INDIRICI - Calisiyor');
+    console.log('   OZGURAPP VIDEO INDIRICI - Calisiyor');
     console.log('   Adres : http://localhost:' + PORT);
     console.log('   Admin : http://localhost:' + PORT + '/admin/giris');
     console.log('  ================================================');
     console.log('');
+  });
+
+  // Playlist indirmeleri birden fazla video nedeniyle uzun sürebilir.
+  // Node'un varsayılan 5 dakikalık HTTP isteği zaman aşımı bağlantıyı kapatmasın.
+  sunucu.requestTimeout = 0;
+  sunucu.timeout = 0;
+
+  sunucu.on('error', hata => {
+    if (hata.code === 'EADDRINUSE') {
+      console.error(`[BASLATMA HATASI] ${PORT} portu zaten kullaniliyor. Mevcut sunucuyu kapatip tekrar deneyin.`);
+    } else {
+      kritikHataKaydet('sunucu-dinleme', hata);
+    }
+    process.exit(1);
   });
   } catch (hata) {
     kritikHataKaydet('uygulama-baslatma', hata);

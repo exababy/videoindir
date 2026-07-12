@@ -57,7 +57,35 @@ function tablolariOlustur() {
       yol TEXT,
       zaman INTEGER NOT NULL DEFAULT (strftime('%s','now'))
     );
+    CREATE TABLE IF NOT EXISTS ayarlar (
+      anahtar TEXT PRIMARY KEY,
+      deger TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS admin_giris_loglari (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      kullanici TEXT NOT NULL,
+      basarili INTEGER NOT NULL DEFAULT 0,
+      ip_hash TEXT,
+      olay TEXT NOT NULL,
+      zaman INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+    );
+    CREATE TABLE IF NOT EXISTS kullanim_olaylari (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      olay TEXT NOT NULL,
+      ip_hash TEXT,
+      zaman INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+    );
   `);
+
+  const varsayilanAyarlar = [
+    ['maks_toplu_video', '20'],
+    ['gecici_dosya_suresi', '3600000'],
+    ['varsayilan_kalite', '720p'],
+    ['bakim_modu', '0']
+  ];
+  varsayilanAyarlar.forEach(([anahtar, deger]) => {
+    db.run('INSERT OR IGNORE INTO ayarlar (anahtar, deger) VALUES (?, ?)', [anahtar, deger]);
+  });
 
   const stmt = db.prepare('SELECT id FROM yoneticiler LIMIT 1');
   const var_ = stmt.step();
