@@ -1,5 +1,5 @@
 'use strict';
-const { execFile } = require('child_process');
+const { execFile, execFileSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuid } = require('uuid');
@@ -23,23 +23,76 @@ function aktifIndirmeKaldir(id) {
   if (id) aktifIndirmeler.delete(id);
 }
 
-// YouTube extraction increasingly requires a JavaScript runtime. Node.js is
-// bundled with the application environment, so make it explicit for every
-// yt-dlp invocation. EJS scripts are fetched from GitHub and cached by yt-dlp;
-// set YTDLP_REMOTE_COMPONENTS=0 to disable that fallback in offline setups.
+// Kurulu yt-dlp sürümünün desteklediği seçenekler. Eski sürümler (ör. apt
+// paketleri) "--js-runtimes" gibi yeni seçenekleri tanımaz ve tanımadığı her
+// seçenekte tüm isteği reddeder; bu yüzden seçenekler yalnızca destekleniyorsa
+// eklenir.
+let yetenekOnbellegi = null;
+function ytdlpYetenekleri() {
+  if (yetenekOnbellegi) return yetenekOnbellegi;
+  try {
+    const yardim = execFileSync(ytdlpKomutBul(), ['--help'], { timeout: 15000, maxBuffer: 4 * 1024 * 1024, windowsHide: true }).toString();
+    yetenekOnbellegi = {
+      kurulu: true,
+      jsRuntimes: yardim.includes('--js-runtimes'),
+      remoteComponents: yardim.includes('--remote-components')
+    };
+  } catch (hata) {
+    // Bulunamadıysa bir sonraki istekte yeniden denenebilsin diye önbelleğe alınmaz.
+    return { kurulu: hata.code !== 'ENOENT', jsRuntimes: false, remoteComponents: false };
+  }
+  return yetenekOnbellegi;
+}
+
+// YouTube artık bir JavaScript çalışma zamanı istiyor. Node.js zaten
+// uygulamayla birlikte geldiği için her yt-dlp çağrısına açıkça verilir. EJS
+// betikleri GitHub'dan alınıp yt-dlp tarafından önbelleğe alınır; çevrimdışı
+// kurulumlarda YTDLP_REMOTE_COMPONENTS=0 ile kapatılabilir.
 function ytDlpJavascriptArgumanlari() {
-  const nodeYolu = process.execPath;
-  const runtime = nodeYolu && fs.existsSync(nodeYolu) ? `node:${nodeYolu}` : 'node';
+  const yetenek = ytdlpYetenekleri();
+  const args = [];
+  if (yetenek.jsRuntimes) {
+    const nodeYolu = process.execPath;
+    args.push('--js-runtimes', nodeYolu && fs.existsSync(nodeYolu) ? `node:${nodeYolu}` : 'node');
+  }
   const remoteComponents = process.env.YTDLP_REMOTE_COMPONENTS === '0'
     ? ''
     : (process.env.YTDLP_REMOTE_COMPONENTS || 'ejs:github');
-  const args = ['--js-runtimes', runtime];
-  if (remoteComponents) args.push('--remote-components', remoteComponents);
-  // Instagram hikayeleri ve bazı içerikler oturum çerezi olmadan alınamaz.
-  // Netscape formatındaki çerez dosyası YTDLP_COOKIES ile belirtilebilir.
+  if (remoteComponents && yetenek.remoteComponents) args.push('--remote-components', remoteComponents);
+  // Instagram hikayeleri ve YouTube'un "bot değilim" doğrulaması için
+  // Netscape formatındaki çerez dosyası YTDLP_COOKIES ile verilebilir.
   const cerezDosyasi = process.env.YTDLP_COOKIES;
   if (cerezDosyasi && fs.existsSync(cerezDosyasi)) args.push('--cookies', cerezDosyasi);
+  // Veri merkezi IP'leri engellendiğinde istekler bir vekil sunucu üzerinden
+  // yapılabilir (ör. http://kullanici:sifre@host:port veya socks5://...).
+  if (process.env.YTDLP_PROXY) args.push('--proxy', process.env.YTDLP_PROXY);
+  // Ör. PO token eklentisi için: youtube:player_client=default,mweb
+  if (process.env.YTDLP_EXTRACTOR_ARGS) args.push('--extractor-args', process.env.YTDLP_EXTRACTOR_ARGS);
   return args;
+}
+
+// yt-dlp çıktısındaki gerçek hatayı korur; kullanıcıya gösterilecek mesaj
+// rotalarda ytdlpHataMesaji() ile üretilir, ayrıntı hata kaydına yazılır.
+function ytdlpHatasi(varsayilan, hata, stderr, stdout) {
+  const detay = String(stderr || stdout || (hata && hata.message) || '').trim();
+  const sonuc = new Error(varsayilan);
+  sonuc.detay = (hata && hata.code === 'ENOENT' ? 'ENOENT: yt-dlp bulunamadi. ' : '') + detay.slice(-800);
+  if (hata && hata.killed) sonuc.detay = 'Zaman asimi (yt-dlp yanit vermedi). ' + sonuc.detay;
+  return sonuc;
+}
+
+function ytdlpHataMesaji(hata, varsayilan) {
+  const detay = String((hata && (hata.detay || hata.message)) || '');
+  if (/ENOENT/.test(detay)) return 'İndirme aracı (yt-dlp) sunucuda bulunamadı. Lütfen site yöneticisine bildirin.';
+  if (/no such option|unrecognized arguments/i.test(detay)) return 'Sunucudaki yt-dlp sürümü çok eski. Lütfen site yöneticisine bildirin.';
+  if (/confirm you.?re not a bot|Sign in to confirm|HTTP Error 429|Too Many Requests|rate.?limit/i.test(detay)) {
+    return 'Platform şu anda sunucumuzdan gelen istekleri sınırlıyor. Lütfen birkaç dakika sonra tekrar deneyin.';
+  }
+  if (/private|login required|log in|requires authentication|members-only|Join this channel/i.test(detay)) return 'Bu içerik gizli veya giriş gerektiriyor; yalnızca herkese açık içerikler indirilebilir.';
+  if (/unavailable|not available|has been removed|does not exist|404/i.test(detay)) return 'Bu video kaldırılmış veya bölgemizde erişilemiyor.';
+  if (/Unsupported URL/i.test(detay)) return 'Bu bağlantı desteklenmiyor. Doğrudan video bağlantısını yapıştırın.';
+  if (/Zaman asimi/.test(detay)) return 'İşlem zaman aşımına uğradı. Lütfen tekrar deneyin.';
+  return varsayilan;
 }
 
 function dosyaAdiHazirla(baslik) {
@@ -89,8 +142,8 @@ function medyaBilgisiAl(url, cb) {
   const komut = ytdlpKomutBul();
   const args = [...ytDlpJavascriptArgumanlari(), '--no-warnings', '--dump-json', '--no-playlist', url];
 
-  execFile(komut, args, { timeout: 30000, maxBuffer: 5 * 1024 * 1024 }, (hata, stdout) => {
-    if (hata) return cb(new Error('Medya bilgisi alinamadi'));
+  execFile(komut, args, { timeout: 45000, maxBuffer: 10 * 1024 * 1024 }, (hata, stdout, stderr) => {
+    if (hata) return cb(ytdlpHatasi('Medya bilgisi alinamadi', hata, stderr));
     try {
       const veri = JSON.parse(stdout.trim().split('\n')[0]);
       const tumFormatlar = veri.formats || [];
@@ -189,8 +242,8 @@ function oynatmaListesiBilgisiAl(url, bilgi, cb) {
     url
   ];
 
-  execFile(komut, args, { timeout: 45000, maxBuffer: 10 * 1024 * 1024 }, (hata, stdout) => {
-    if (hata) return cb(new Error('Oynatma listesi bilgisi alinamadi'));
+  execFile(komut, args, { timeout: 45000, maxBuffer: 10 * 1024 * 1024 }, (hata, stdout, stderr) => {
+    if (hata) return cb(ytdlpHatasi('Oynatma listesi bilgisi alinamadi', hata, stderr));
     try {
       const veri = JSON.parse(String(stdout || '').trim());
       const oynatmaListesi = (veri.entries || [])
@@ -233,8 +286,8 @@ function youtubeAra(sorgu, cb) {
     `ytsearch10:${temizSorgu}`
   ];
 
-  execFile(komut, args, { timeout: 30000, maxBuffer: 5 * 1024 * 1024 }, (hata, stdout) => {
-    if (hata) return cb(new Error('YouTube aramasi basarisiz'));
+  execFile(komut, args, { timeout: 30000, maxBuffer: 5 * 1024 * 1024 }, (hata, stdout, stderr) => {
+    if (hata) return cb(ytdlpHatasi('YouTube aramasi basarisiz', hata, stderr));
 
     const sonuclar = String(stdout || '')
       .split(/\r?\n/)
@@ -295,7 +348,11 @@ function indir(url, format, kalite, cb, baslik) {
   if (ffmpegKlasoru) args = ['--ffmpeg-location', ffmpegKlasoru, ...args];
 
   execFile(komut, args, { timeout: 300000, maxBuffer: 10 * 1024 * 1024 }, (hata, stdout, stderr) => {
-    if (hata) return cb(new Error((stderr || stdout || 'Indirme basarisiz').trim().slice(0, 500)));
+    if (hata) {
+      const sonuc = ytdlpHatasi('Indirme basarisiz', hata, stderr, stdout);
+      sonuc.message = sonuc.detay.slice(0, 500) || 'Indirme basarisiz';
+      return cb(sonuc);
+    }
     if (!fs.existsSync(hedef)) {
       const detay = String(stderr || stdout || '').trim().slice(0, 500);
       return cb(new Error(detay ? `Dosya olusturulamadi: ${detay}` : 'Dosya olusturulamadi'));
@@ -345,4 +402,4 @@ function kirp(url, baslangic, bitis, kalite, cb, baslik) {
   }, baslik);
 }
 
-module.exports = { medyaBilgisiAl, youtubeAra, indir, kirp, aktifIndirmeler, aktifIndirmeEkle, aktifIndirmeGuncelle, aktifIndirmeKaldir };
+module.exports = { ytdlpKomutBul, ytdlpYetenekleri, ytDlpJavascriptArgumanlari, ytdlpHataMesaji, medyaBilgisiAl, youtubeAra, indir, kirp, aktifIndirmeler, aktifIndirmeEkle, aktifIndirmeGuncelle, aktifIndirmeKaldir };

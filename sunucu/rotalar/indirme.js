@@ -5,7 +5,7 @@ const fs = require('fs');
 const { v4: uuid } = require('uuid');
 const db = require('../../veritabani/veritabani');
 const { urlDogrula, platformTespit } = require('../servisler/platform');
-const { medyaBilgisiAl, youtubeAra, indir, kirp, aktifIndirmeEkle, aktifIndirmeGuncelle, aktifIndirmeKaldir } = require('../servisler/indirici');
+const { ytdlpHataMesaji, medyaBilgisiAl, youtubeAra, indir, kirp, aktifIndirmeEkle, aktifIndirmeGuncelle, aktifIndirmeKaldir } = require('../servisler/indirici');
 const ayarlar = require('../servisler/ayarlar');
 const instagram = require('../servisler/instagram');
 
@@ -16,13 +16,21 @@ function aktifIndirmeyiSonlandir(islemId, durum, mesaj) {
   setTimeout(() => aktifIndirmeKaldir(islemId), 15000);
 }
 
+// yt-dlp'nin gerçek hata çıktısı yönetici panelindeki hata kaydına yazılır,
+// kullanıcıya anlaşılır bir mesaj döner.
+function ytdlpHatasiKaydet(hata, yol) {
+  const detay = String(hata?.detay || hata?.message || '').slice(-500);
+  console.error(`[YT-DLP] ${yol}: ${detay}`);
+  try { db.calistir('INSERT INTO hatalar (mesaj, yol) VALUES (?, ?)', [detay || 'yt-dlp hatasi', yol]); } catch {}
+}
+
 function indirmeHatasiMesaji(hata) {
-  const detay = String(hata?.message || 'Indirme basarisiz').slice(0, 500);
-  try { db.calistir('INSERT INTO hatalar (mesaj, yol) VALUES (?, ?)', [detay, 'indirme']); } catch {}
+  ytdlpHatasiKaydet(hata, 'indirme');
+  const detay = String(hata?.detay || hata?.message || '');
   if (/10013|EACCES|ENETUNREACH|ECONNREFUSED|ETIMEDOUT|Failed to establish|network/i.test(detay)) {
-    return 'YouTube sunucusuna baglanilamadi. Internet ve guvenlik duvari ayarlarini kontrol edin.';
+    return 'Kaynak sunucuya bağlanılamadı. Lütfen tekrar deneyin.';
   }
-  return 'Indirme basarisiz oldu. Lutfen tekrar deneyin.';
+  return ytdlpHataMesaji(hata, 'İndirme başarısız oldu. Lütfen tekrar deneyin.');
 }
 
 function kullanimOlayiKaydet(req, olay) {
@@ -38,7 +46,10 @@ yonlendirici.post('/ara', (req, res) => {
   kullanimOlayiKaydet(req, 'arama');
 
   youtubeAra(sorgu, (hata, sonuclar) => {
-    if (hata) return res.status(422).json({ basari: false, mesaj: 'YouTube aramasi yapilamadi. Lutfen tekrar deneyin.' });
+    if (hata) {
+      ytdlpHatasiKaydet(hata, 'arama');
+      return res.status(422).json({ basari: false, mesaj: ytdlpHataMesaji(hata, 'YouTube araması yapılamadı. Lütfen tekrar deneyin.') });
+    }
     res.json({ basari: true, sonuclar });
   });
 });
@@ -49,7 +60,10 @@ yonlendirici.post('/analiz', (req, res) => {
     return res.status(400).json({ basari: false, mesaj: 'Gecersiz veya desteklenmeyen baglanti.' });
   }
   medyaBilgisiAl(url, (hata, veri) => {
-    if (hata) return res.status(422).json({ basari: false, mesaj: 'Medya bilgisi alinamadi. Baglantıyı kontrol edin.' });
+    if (hata) {
+      ytdlpHatasiKaydet(hata, 'analiz');
+      return res.status(422).json({ basari: false, mesaj: ytdlpHataMesaji(hata, 'Video bilgisi alınamadı. Bağlantının herkese açık bir içeriğe ait olduğundan emin olun.') });
+    }
     res.json({ basari: true, veri });
   });
 });

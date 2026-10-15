@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "sunucu/uygulama.js",
   "scripts": {
-    "start": "node sunucu/uygulama.js"
+    "start": "node sunucu/uygulama.js",
+    "teshis": "node sunucu/teshis.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

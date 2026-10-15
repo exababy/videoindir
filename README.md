@@ -12,6 +12,23 @@ npm start
 
 Sunucuda `yt-dlp` ve `ffmpeg` PATH'te olmalı (Windows'ta `bin/` klasörü de desteklenir).
 
+## Sorun giderme
+
+“Video bilgisi alınamadı” gibi hatalarda sunucuda şunu çalıştırın:
+
+```bash
+npm run teshis              # yt-dlp, ffmpeg, izinler ve örnek YouTube analizi
+npm run teshis -- <link>    # belirli bir bağlantıyı dener
+```
+
+yt-dlp'nin gerçek hata çıktısı sunucu loguna (`[YT-DLP] ...`) ve yönetici panelindeki hata kaydına yazılır. En sık nedenler:
+
+- **yt-dlp eski / apt ile kurulmuş:** `sudo apt remove yt-dlp` sonra
+  `sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && sudo chmod a+rx /usr/local/bin/yt-dlp`.
+  YouTube sık değiştiği için haftalık `sudo yt-dlp -U` (cron) önerilir.
+- **“Sign in to confirm you're not a bot”:** YouTube bulut sunucu IP'sini engelliyor. `.env` içinde `YTDLP_COOKIES` (tarayıcıdan dışa aktarılmış cookies.txt) veya `YTDLP_PROXY` tanımlayın.
+- **ffmpeg yok:** `sudo apt install -y ffmpeg` (MP3 dönüştürme ve birleştirme için gerekli).
+
 ## Yapı
 
 | Yol | Açıklama |
