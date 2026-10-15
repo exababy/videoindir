@@ -5,6 +5,7 @@ const fs = require('fs');
 const { v4: uuid } = require('uuid');
 const { platformTespit } = require('./platform');
 const ayarlar = require('./ayarlar');
+const tiktok = require('./tiktok');
 
 const GECICI_KLASOR = path.join(__dirname, '..', '..', 'gecici');
 const aktifIndirmeler = new Map();
@@ -134,7 +135,48 @@ function ffmpegKlasoruBul() {
   return fs.existsSync(path.join(klasor, 'ffmpeg.exe')) ? klasor : null;
 }
 
+// TikTok bulut sunucu IP'lerini sık sık engellediği için yt-dlp başarısız
+// olursa yedek kaynak denenir. Yedek de başarısız olursa yt-dlp'nin hatası
+// (gerçek neden) korunur.
+function tiktokYedegiKullan(url, hata) {
+  return tiktok.etkin() && platformTespit(url)?.platform === 'tiktok' && !/ENOENT/.test(String(hata?.detay || ''));
+}
+
 function medyaBilgisiAl(url, cb) {
+  ytdlpMedyaBilgisiAl(url, (hata, veri) => {
+    if (!hata || !tiktokYedegiKullan(url, hata)) return cb(hata, veri);
+    tiktok.medyaBilgisi(url, platformTespit(url)).then(
+      sonuc => cb(null, sonuc),
+      yedekHata => {
+        hata.detay = `${hata.detay || ''} | Yedek: ${yedekHata.detay || yedekHata.message}`;
+        cb(hata);
+      }
+    );
+  });
+}
+
+function tiktokYedekIndir(url, format, id, hedef, baslik, cb, ilkHata) {
+  const sesMi = format === 'mp3' || format === 'wav';
+  const videoYolu = sesMi ? path.join(GECICI_KLASOR, `${id}.kaynak.mp4`) : hedef;
+  const hataVer = yedekHata => {
+    try { if (sesMi) fs.unlinkSync(videoYolu); } catch {}
+    const sonuc = new Error('Indirme basarisiz');
+    sonuc.detay = `${ilkHata.detay || ''} | Yedek: ${yedekHata.detay || yedekHata.message}`;
+    sonuc.message = sonuc.detay.slice(-500);
+    cb(sonuc);
+  };
+  tiktok.videoIndir(url, videoYolu).then(() => {
+    if (!sesMi) return cb(null, { id, dosyaYolu: hedef, format, dosyaAdi: dosyaAdiHazirla(baslik) });
+    const sesArgs = format === 'mp3' ? ['-c:a', 'libmp3lame', '-q:a', '0'] : ['-c:a', 'pcm_s16le'];
+    execFile(ffmpegKomutBul(), ['-y', '-i', videoYolu, '-vn', ...sesArgs, hedef], { timeout: 300000, maxBuffer: 10 * 1024 * 1024 }, (ffHata, stdout, stderr) => {
+      try { fs.unlinkSync(videoYolu); } catch {}
+      if (ffHata || !fs.existsSync(hedef)) return hataVer({ detay: `ffmpeg: ${String(stderr || ffHata?.message || '').trim().slice(-300)}` });
+      cb(null, { id, dosyaYolu: hedef, format, dosyaAdi: dosyaAdiHazirla(baslik) });
+    });
+  }, hataVer);
+}
+
+function ytdlpMedyaBilgisiAl(url, cb) {
   const bilgi = platformTespit(url);
   if (!bilgi) return cb(new Error('Desteklenmeyen platform'));
   if (oynatmaListesiUrlMi(url)) return oynatmaListesiBilgisiAl(url, bilgi, cb);
@@ -351,6 +393,7 @@ function indir(url, format, kalite, cb, baslik) {
     if (hata) {
       const sonuc = ytdlpHatasi('Indirme basarisiz', hata, stderr, stdout);
       sonuc.message = sonuc.detay.slice(0, 500) || 'Indirme basarisiz';
+      if (tiktokYedegiKullan(url, sonuc)) return tiktokYedekIndir(url, format, id, hedef, baslik, cb, sonuc);
       return cb(sonuc);
     }
     if (!fs.existsSync(hedef)) {

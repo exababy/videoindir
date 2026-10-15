@@ -18,7 +18,7 @@ module.exports = {
     h1: 'Gizlilik Politikası',
     bolumler: [
       { h2: 'Topladığımız veriler', p: ['Hizmeti kullanmak için hesap oluşturmanız gerekmez; ad, e-posta veya telefon gibi kişisel bilgiler istemeyiz. Kötüye kullanımı önlemek ve istatistik tutmak için IP adresiniz geri döndürülemez biçimde özetlenerek (hash) saklanır.'] },
-      { h2: 'İndirilen dosyalar', p: ['Dönüştürülen dosyalar sunucumuzda geçici olarak tutulur ve en geç birkaç saat içinde otomatik olarak silinir. Yapıştırdığınız bağlantılar kişisel kimliğinizle ilişkilendirilmez.'] },
+      { h2: 'İndirilen dosyalar', p: ['Dönüştürülen dosyalar sunucumuzda geçici olarak tutulur ve en geç birkaç saat içinde otomatik olarak silinir. Yapıştırdığınız bağlantılar kişisel kimliğinizle ilişkilendirilmez. Bazı platformlarda (ör. TikTok) içeriğe erişebilmek için bağlantı, kimlik bilgisi içermeden üçüncü taraf bir dönüştürme servisine iletilebilir.'] },
       { h2: 'Çerezler ve reklamlar', p: ['Sitemizde tema tercihiniz gibi küçük ayarları hatırlamak için tarayıcı depolaması kullanılır. Hizmeti ücretsiz sunabilmek için Google AdSense gibi üçüncü taraf reklam sağlayıcılarıyla çalışabiliriz. Bu sağlayıcılar, ilgi alanına dayalı reklam göstermek amacıyla çerez kullanabilir. Kişiselleştirilmiş reklamları Google Reklam Ayarları sayfasından kapatabilirsiniz.'] },
       { h2: 'Haklarınız', p: [`KVKK ve GDPR kapsamındaki talepleriniz için ${site.iletisimEposta} adresinden bize ulaşabilirsiniz.`] }
     ]
