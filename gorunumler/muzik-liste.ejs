@@ -1,0 +1,32 @@
+<%- include('parcalar/ust') %>
+<section class="kahraman kahraman-sayfa">
+  <div class="kap kahraman-ic">
+    <nav class="kirinti" aria-label="Sayfa konumu"><ol><li><a href="/">Ana Sayfa</a></li><li><span aria-current="page">Top 25 Şarkı</span></li></ol></nav>
+    <% if (liste.tarih) { %><p class="rozet"><span class="rozet-nokta" aria-hidden="true"></span><%= tarihYaz(liste.tarih) %> listesi</p><% } %>
+    <h1>Bugünün Top 25 Şarkısı</h1>
+    <p class="kahraman-ozet">YouTube Türkiye’de son 24 saatte en çok izlenen müzik videoları. Liste her gün otomatik güncellenir; istediğiniz şarkıyı tek dokunuşla MP3 olarak indirin.</p>
+  </div>
+</section>
+<%- include('parcalar/reklam', { alan: 'reklam_ust', boyut: '728 × 90 · mobil 320 × 100', ekSinif: 'reklam-kap reklam-banner' }) %>
+<section class="bolum bolum-sik">
+  <div class="kap">
+    <% if (liste.sarkilar.length) { %>
+    <%- include('parcalar/sarki-satirlari', { sarkilar: liste.sarkilar }) %>
+    <% } else { %>
+    <p class="arac-ipucu">Liste hazırlanıyor. Lütfen biraz sonra tekrar bakın.</p>
+    <% } %>
+  </div>
+</section>
+<section class="bolum bolum-alt">
+  <div class="kap kap-dar">
+    <article class="makale">
+      <h2>Liste nasıl hazırlanıyor?</h2>
+      <p>Bu sayfa, YouTube Müzik Listeleri’nin Türkiye için yayımladığı günlük “en popüler müzik videoları” verisine dayanır. Sıralama, ilgili gün içinde Türkiye’den alınan izlenmelere göre belirlenir. Her gün ilk 25 şarkı otomatik olarak buraya eklenir ve her şarkı için ayrı bir MP3 indirme sayfası oluşturulur.</p>
+      <p>Satırlardaki ▲ ve ▼ işaretleri şarkının bir önceki güne göre kaç basamak yükseldiğini veya gerilediğini gösterir. “Yeni” etiketi şarkının listeye o gün girdiğini belirtir.</p>
+      <h2>Listeden çıkan şarkılar ne oluyor?</h2>
+      <p>Listeden düşen şarkıların sayfaları silinmez. Daha önce listeye girmiş tüm şarkılara <a href="/sarkilar/">şarkı arşivinden</a> ya da sanatçı sayfalarından ulaşabilirsiniz.</p>
+      <p>Şarkıların tüm hakları sahiplerine aittir; lütfen yalnızca kişisel kullanım için indirin ve sevdiğiniz sanatçıları dijital platformlarda destekleyin.</p>
+    </article>
+  </div>
+</section>
+<%- include('parcalar/alt') %>

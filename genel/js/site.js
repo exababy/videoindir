@@ -596,7 +596,24 @@
     }
   }
 
+  // Şarkı sayfasındaki klip: YouTube oynatıcısı yalnızca tıklanınca yüklenir
+  // (sayfa hızı için hafif önizleme).
+  function videoKur() {
+    var kap = $('sarkiVideo');
+    if (!kap) return;
+    kap.querySelector('.sarki-oynat').addEventListener('click', function () {
+      var iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(kap.dataset.video) + '?autoplay=1&rel=0';
+      iframe.title = kap.querySelector('img').alt;
+      iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      kap.innerHTML = '';
+      kap.appendChild(iframe);
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
+    videoKur();
     temaKur();
     menuKur();
     aracKur();

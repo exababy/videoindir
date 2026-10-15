@@ -10,6 +10,21 @@
 
 <%- include('parcalar/reklam', { alan: 'reklam_ust', boyut: '728 × 90 · mobil 320 × 100', ekSinif: 'reklam-kap reklam-banner' }) %>
 
+<% if (topListe.sarkilar.length) { %>
+<section class="bolum" aria-labelledby="topBaslik">
+  <div class="kap">
+    <div class="bolum-bas bolum-bas-yan">
+      <div>
+        <p class="ust-baslik">Günün listesi · <%= tarihYaz(topListe.tarih) %></p>
+        <h2 id="topBaslik">En çok dinlenen şarkılar</h2>
+      </div>
+      <a class="metin-link" href="/top-25-sarkilar/">Top 25’in tamamı <svg width="16" height="16" aria-hidden="true"><use href="#i-sag-ok"/></svg></a>
+    </div>
+    <%- include('parcalar/sarki-satirlari', { sarkilar: topListe.sarkilar.slice(0, 10) }) %>
+  </div>
+</section>
+<% } %>
+
 <section class="bolum" aria-labelledby="ozellikBaslik">
   <div class="kap">
     <div class="bolum-bas">

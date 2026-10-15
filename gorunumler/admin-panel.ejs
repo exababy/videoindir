@@ -176,6 +176,14 @@ tr:last-child td{border-bottom:none}
     <div class="ayar-bilgi">Playlist limiti ve saklama süresi yeni işlemlerde uygulanır. Saklama süresi 5 dakika ile 24 saat arasındadır.</div>
   </div>
 
+  <div class="bolum" id="muzikBolumu">
+    <div class="sistem-ust"><h3>Günlük Müzik Listesi (YouTube Türkiye Top 25)</h3><a class="sistem-zaman" href="/top-25-sarkilar/" target="_blank" rel="noopener">Sayfayı aç ↗</a></div>
+    <div class="sistem-durum-detay" id="muzikDurum">Yükleniyor...</div>
+    <ol id="muzikListe" style="margin:12px 0 0 18px;font-size:13px;line-height:1.7;columns:2;column-gap:28px"></ol>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:14px"><button class="kaydet-btn" id="muzikGuncelleBtn" type="button">Şimdi güncelle</button><div class="mesaj" id="muzikMesaj"></div></div>
+    <div class="ayar-bilgi">Liste 3 saatte bir otomatik kontrol edilir; yeni günün listesi geldiğinde her şarkı için kalıcı bir MP3 indirme sayfası açılır.</div>
+  </div>
+
   <div class="bolum" id="reklamBolumu">
     <div class="sistem-ust"><h3>Reklam Yönetimi</h3><span class="sistem-zaman">AdSense / Ad Manager / özel HTML</span></div>
     <div class="ayarlar-grid">
@@ -358,6 +366,46 @@ async function aktifIndirmeleriGetir() {
     document.getElementById('aktifIndirmeZamani').textContent = `Son kontrol: ${new Date().toLocaleTimeString('tr-TR')}`;
   } catch (hata) {
     liste.innerHTML = `<div class="sistem-durum-detay" style="color:var(--hata)">${htmlGuvenli(hata.message || 'Aktif işler alınamadı.')}</div>`;
+  }
+}
+
+async function muzikGetir() {
+  try {
+    const yanit = await fetch('/admin/muzik', { headers: { Accept: 'application/json' } });
+    const veri = await yanit.json();
+    const d = veri.durum;
+    const zaman = t => t ? new Date(t).toLocaleString('tr-TR') : '-';
+    document.getElementById('muzikDurum').textContent =
+      `Son liste: ${d.sonListeTarihi || '-'} · Toplam şarkı sayfası: ${d.sarkiSayisi} · Son kontrol: ${zaman(d.sonDeneme)}` + (d.sonHata ? ` · Son hata: ${d.sonHata}` : '');
+    const ol = document.getElementById('muzikListe');
+    ol.innerHTML = '';
+    veri.liste.forEach(x => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '/' + x.slug + '/'; a.target = '_blank'; a.rel = 'noopener'; a.textContent = x.ad; a.style.color = 'inherit';
+      li.append(a); ol.append(li);
+    });
+  } catch {
+    document.getElementById('muzikDurum').textContent = 'Durum alınamadı.';
+  }
+}
+async function muzikGuncelle() {
+  const btn = document.getElementById('muzikGuncelleBtn');
+  const mesaj = document.getElementById('muzikMesaj');
+  btn.disabled = true;
+  mesaj.className = 'mesaj';
+  mesaj.textContent = 'Güncelleniyor...';
+  try {
+    const yanit = await fetch('/admin/muzik/guncelle', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ zorla: true }) });
+    const veri = await yanit.json();
+    mesaj.className = 'mesaj ' + (veri.basari ? 'basari' : 'hata2');
+    mesaj.textContent = veri.mesaj;
+    muzikGetir();
+  } catch {
+    mesaj.className = 'mesaj hata2';
+    mesaj.textContent = 'Güncellenemedi.';
+  } finally {
+    btn.disabled = false;
   }
 }
 
@@ -601,6 +649,8 @@ document.addEventListener('DOMContentLoaded', () => {
   window.setInterval(aktifIndirmeleriGetir, 3000);
   document.getElementById('ayarKaydetBtn')?.addEventListener('click', ayarlariKaydet);
   document.getElementById('reklamKaydetBtn')?.addEventListener('click', reklamlariKaydet);
+  document.getElementById('muzikGuncelleBtn')?.addEventListener('click', muzikGuncelle);
+  muzikGetir();
   reklamlariGetir();
   ayarlariGetir();
   document.getElementById('guvenlikToggle')?.addEventListener('click', guvenlikPaneliniDegistir);

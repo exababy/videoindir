@@ -6,7 +6,7 @@
       <svg class="arac-giris-ikon" width="20" height="20" aria-hidden="true"><use href="<%= mod === 'profil' ? '#p-instagram' : '#i-baglanti' %>"/></svg>
       <input class="arac-giris" id="aracGiris" name="q" type="text" inputmode="url" enterkeyhint="go"
              placeholder="<%= arac.placeholder || (mod === 'profil' ? 'kullaniciadi veya instagram.com/kullaniciadi' : 'Bağlantıyı buraya yapıştırın') %>"
-             autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="500">
+             autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="500"<% if (arac.deger) { %> value="<%= arac.deger %>"<% } %>>
       <button class="arac-yapistir" id="aracYapistir" type="button" aria-label="Panodan yapıştır">
         <svg width="16" height="16" aria-hidden="true"><use href="#i-yapistir"/></svg><span>Yapıştır</span>
       </button>
@@ -15,7 +15,7 @@
       </button>
     </div>
     <button class="btn btn-ana arac-gonder" id="aracGonder" type="submit">
-      <span class="arac-gonder-metin"><%= mod === 'profil' ? 'Göster' : 'İndir' %></span>
+      <span class="arac-gonder-metin"><%= arac.dugme || (mod === 'profil' ? 'Göster' : 'İndir') %></span>
       <svg width="18" height="18" aria-hidden="true"><use href="#i-sag-ok"/></svg>
     </button>
   </form>

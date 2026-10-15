@@ -104,6 +104,7 @@ function meta({ baslik, aciklama, yol, tur = 'website', gorsel, robots, jsonld }
     kanonik,
     tur,
     gorsel: mutlak(gorsel || '/img/og.png'),
+    gorselVarsayilan: !gorsel,
     robots: robots || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
     jsonld: jsonld || null,
     guncelleme: SON_GUNCELLEME
@@ -119,7 +120,18 @@ function sitemap() {
   });
   site.yasalSayfalar.forEach(s => satirlar.push({ yol: `/${s.slug}/`, oncelik: '0.3', siklik: 'yearly' }));
 
-  const govde = satirlar.map(s => `  <url>\n    <loc>${mutlak(s.yol)}</loc>\n    <lastmod>${SON_GUNCELLEME}</lastmod>\n    <changefreq>${s.siklik}</changefreq>\n    <priority>${s.oncelik}</priority>\n  </url>`).join('\n');
+  // Günlük müzik listesi ve şarkı sayfaları
+  try {
+    const muzik = require('./muzik').sitemapKayitlari();
+    if (muzik.sonTarih) {
+      satirlar.push({ yol: '/top-25-sarkilar/', oncelik: '0.9', siklik: 'daily', tarih: muzik.sonTarih });
+      satirlar.push({ yol: '/sarkilar/', oncelik: '0.6', siklik: 'daily', tarih: muzik.sonTarih });
+    }
+    muzik.sarkilar.forEach(x => satirlar.push({ yol: `/${x.slug}/`, oncelik: x.son_tarih === muzik.sonTarih ? '0.8' : '0.6', siklik: 'daily', tarih: x.son_tarih }));
+    muzik.sanatcilar.forEach(x => satirlar.push({ yol: `/sanatci/${x.slug}/`, oncelik: '0.5', siklik: 'weekly', tarih: x.son_tarih }));
+  } catch {}
+
+  const govde = satirlar.map(s => `  <url>\n    <loc>${mutlak(s.yol)}</loc>\n    <lastmod>${s.tarih || SON_GUNCELLEME}</lastmod>\n    <changefreq>${s.siklik}</changefreq>\n    <priority>${s.oncelik}</priority>\n  </url>`).join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${govde}\n</urlset>\n`;
 }
 

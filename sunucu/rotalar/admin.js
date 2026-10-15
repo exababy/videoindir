@@ -8,6 +8,7 @@ const db = require('../../veritabani/veritabani');
 const { aktifIndirmeler } = require('../servisler/indirici');
 const ayarlar = require('../servisler/ayarlar');
 const reklam = require('../servisler/reklam');
+const muzik = require('../servisler/muzik');
 
 const yonlendirici = express.Router();
 const PROJE_KLASORU = path.join(__dirname, '..', '..');
@@ -265,6 +266,16 @@ yonlendirici.post('/reklamlar', adminKorumasi, (req, res) => {
   } catch {
     res.status(500).json({ basari: false, mesaj: 'Reklam ayarları kaydedilemedi.' });
   }
+});
+
+yonlendirici.get('/muzik', adminKorumasi, (req, res) => {
+  const liste = muzik.liste();
+  res.json({ basari: true, durum: muzik.durumBilgisi(), liste: liste.sarkilar.slice(0, 25).map(x => ({ sira: x.sira, ad: `${x.sanatci} - ${x.sarki}`, slug: x.slug })) });
+});
+
+yonlendirici.post('/muzik/guncelle', adminKorumasi, async (req, res) => {
+  const sonuc = await muzik.guncelle({ zorla: req.body?.zorla === true });
+  res.status(sonuc.basari ? 200 : 502).json(sonuc);
 });
 
 yonlendirici.get('/guvenlik-olaylari', adminKorumasi, (req, res) => {

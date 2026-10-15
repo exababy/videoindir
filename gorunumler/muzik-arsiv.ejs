@@ -1,0 +1,32 @@
+<%- include('parcalar/ust') %>
+<section class="kahraman kahraman-sayfa kahraman-kisa">
+  <div class="kap kahraman-ic">
+    <nav class="kirinti" aria-label="Sayfa konumu"><ol><% kirinti.forEach(function (k, i) { %><li><% if (i < kirinti.length - 1) { %><a href="<%= k.yol %>"><%= k.ad %></a><% } else { %><span aria-current="page"><%= k.ad %></span><% } %></li><% }) %></ol></nav>
+    <h1><%= h1 %></h1>
+    <p class="kahraman-ozet"><%= ozet %></p>
+  </div>
+</section>
+<%- include('parcalar/reklam', { alan: 'reklam_ust', boyut: '728 × 90 · mobil 320 × 100', ekSinif: 'reklam-kap reklam-banner' }) %>
+<section class="bolum bolum-sik">
+  <div class="kap">
+    <ul class="kartlar">
+      <% sarkilar.forEach(function (x) { %>
+      <li>
+        <a class="kart" href="/<%= x.slug %>/">
+          <img class="kart-kapak" src="https://i.ytimg.com/vi/<%= x.video_id %>/mqdefault.jpg" alt="" width="64" height="36" loading="lazy">
+          <span class="kart-metin"><span class="kart-ad"><%= x.sarki %></span><span class="kart-alt"><%= x.sanatci %> · en iyi <%= x.en_iyi_sira %>. sıra</span></span>
+          <svg class="kart-ok" width="16" height="16" aria-hidden="true"><use href="#i-sag-ok"/></svg>
+        </a>
+      </li>
+      <% }) %>
+    </ul>
+    <% if (typeof sayfalama !== 'undefined' && sayfalama.sayfaSayisi > 1) { %>
+    <nav class="sayfalama" aria-label="Sayfalar">
+      <% for (var i = 1; i <= sayfalama.sayfaSayisi; i++) { %>
+      <a href="/sarkilar/<%= i > 1 ? '?sayfa=' + i : '' %>"<% if (i === sayfalama.sayfa) { %> aria-current="page"<% } %>><%= i %></a>
+      <% } %>
+    </nav>
+    <% } %>
+  </div>
+</section>
+<%- include('parcalar/alt') %>

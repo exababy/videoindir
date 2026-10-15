@@ -1,0 +1,97 @@
+<%- include('parcalar/ust') %>
+<section class="kahraman kahraman-sayfa">
+  <div class="kap kahraman-ic">
+    <nav class="kirinti" aria-label="Sayfa konumu">
+      <ol>
+        <% s.kirinti.forEach(function (k, i) { %>
+        <li><% if (i < s.kirinti.length - 1) { %><a href="<%= k.yol %>"><%= k.ad %></a><% } else { %><span aria-current="page"><%= k.ad %></span><% } %></li>
+        <% }) %>
+      </ol>
+    </nav>
+    <% if (s.guncel) { %><p class="rozet"><span class="rozet-nokta" aria-hidden="true"></span>YouTube Türkiye listesinde <%= s.p.son_sira %>. sırada</p><% } %>
+    <h1><%= s.ADI %> MP3 İndir</h1>
+    <p class="kahraman-ozet"><%= s.p.sanatci %> imzalı “<%= s.p.sarki %>” şarkısını 320 kbps’ye kadar MP3 ya da 1080p MP4 olarak ücretsiz indirin. Bağlantı hazır — tek dokunuş yeterli.</p>
+    <%- include('parcalar/arac', { arac: s.arac }) %>
+  </div>
+</section>
+
+<%- include('parcalar/reklam', { alan: 'reklam_ust', boyut: '728 × 90 · mobil 320 × 100', ekSinif: 'reklam-kap reklam-banner' }) %>
+
+<section class="bolum">
+  <div class="kap">
+    <div class="sarki-kart">
+      <div class="sarki-video" id="sarkiVideo" data-video="<%= s.p.video_id %>">
+        <img src="https://i.ytimg.com/vi/<%= s.p.video_id %>/hqdefault.jpg" alt="<%= s.ADI %> klip görseli" width="480" height="360" loading="lazy">
+        <button type="button" class="sarki-oynat" aria-label="<%= s.ADI %> klibini oynat"><svg width="28" height="28" aria-hidden="true"><use href="#p-youtube"/></svg></button>
+      </div>
+      <div class="sarki-bilgi">
+        <h2 class="sarki-baslik"><%= s.p.sarki %></h2>
+        <p class="sarki-sanatci"><a href="/sanatci/<%= s.p.sanatci_slug %>/"><%= s.p.sanatci %></a></p>
+        <% if (s.guncel) { %>
+        <p class="sira-durum sira-<%= s.hareket.tur %>"><strong>#<%= s.p.son_sira %></strong><span><%= s.hareket.metin %></span></p>
+        <% } %>
+        <dl class="sarki-ozellikler">
+          <% s.bilgiler.forEach(function (b) { %>
+          <div><dt><%= b.etiket %></dt><dd><% if (b.link) { %><a href="<%= b.link %>"><%= b.deger %></a><% } else { %><%= b.deger %><% } %></dd></div>
+          <% }) %>
+        </dl>
+        <% if (s.gecmis.length > 1) { %>
+        <div class="sira-grafik" aria-label="Son günlerdeki liste sırası">
+          <p class="sira-grafik-baslik">Son <%= s.gecmis.length %> gün liste sırası</p>
+          <ol>
+            <% s.gecmis.forEach(function (g) { var y = Math.max(8, 100 - (g.sira - 1) * (92 / 24)); %>
+            <li title="<%= g.tarih %>: <%= g.sira %>. sıra"><span style="height:<%= y.toFixed(0) %>%"></span><em><%= g.sira %></em></li>
+            <% }) %>
+          </ol>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bolum bolum-alt">
+  <div class="kap kap-dar">
+    <article class="makale">
+      <% s.icerik.forEach(function (b, i) { %>
+      <h2><%= b.h2 %></h2>
+      <% b.p.forEach(function (p) { %><p><%= p %></p><% }) %>
+      <% if (i === 0) { %><%- include('parcalar/reklam', { alan: 'reklam_icerik', boyut: '336 × 280 · duyarlı', ekSinif: 'reklam-makale' }) %><% } %>
+      <% if (b.h2.endsWith('şarkıları') && digerleri.length) { %>
+      <ul class="sarki-liste sarki-liste-kucuk">
+        <% digerleri.slice(0, 8).forEach(function (d) { %>
+        <li><a href="/<%= d.slug %>/"><%= d.sanatci %> - <%= d.sarki %> MP3 İndir</a></li>
+        <% }) %>
+      </ul>
+      <% } %>
+      <% }) %>
+    </article>
+  </div>
+</section>
+
+<section class="bolum" aria-labelledby="sssBaslik">
+  <div class="kap kap-dar">
+    <div class="bolum-bas"><p class="ust-baslik">SSS</p><h2 id="sssBaslik"><%= s.p.sarki %> hakkında sorular</h2></div>
+    <div class="sss">
+      <% s.sss.forEach(function (m, i) { %>
+      <details class="sss-oge"<% if (i === 0) { %> open<% } %>>
+        <summary><h3><%= m.s %></h3><svg width="18" height="18" aria-hidden="true"><use href="#i-asagi-ok"/></svg></summary>
+        <p><%= m.c %></p>
+      </details>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<% if (liste.sarkilar.length) { %>
+<section class="bolum bolum-alt" aria-labelledby="listeBaslik">
+  <div class="kap">
+    <div class="bolum-bas bolum-bas-yan">
+      <div><p class="ust-baslik">Günün listesi</p><h2 id="listeBaslik">Bugünün Top 25 şarkısı</h2></div>
+      <a class="metin-link" href="/top-25-sarkilar/">Tüm liste <svg width="16" height="16" aria-hidden="true"><use href="#i-sag-ok"/></svg></a>
+    </div>
+    <%- include('parcalar/sarki-satirlari', { sarkilar: liste.sarkilar.slice(0, 10), aktif: s.p.video_id }) %>
+  </div>
+</section>
+<% } %>
+<%- include('parcalar/alt') %>

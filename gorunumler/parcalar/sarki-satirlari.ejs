@@ -1,0 +1,16 @@
+<ol class="sarki-satirlari">
+  <% sarkilar.forEach(function (x) { var hr = !x.dun_sira ? 'yeni' : (x.dun_sira > x.sira ? 'yukari' : (x.dun_sira < x.sira ? 'asagi' : 'ayni')); %>
+  <li>
+    <a class="sarki-satir<%= typeof aktif !== 'undefined' && aktif === x.video_id ? ' aktif' : '' %>" href="/<%= x.slug %>/">
+      <span class="sarki-sira"><%= x.sira %></span>
+      <span class="sarki-hareket sira-<%= hr %>" title="<%= hr === 'yeni' ? 'Yeni giriş' : (x.dun_sira ? 'Dün ' + x.dun_sira + '. sıra' : '') %>"><% if (hr === 'yeni') { %>Yeni<% } else if (hr === 'yukari') { %>▲ <%= x.dun_sira - x.sira %><% } else if (hr === 'asagi') { %>▼ <%= x.sira - x.dun_sira %><% } else { %>–<% } %></span>
+      <img src="https://i.ytimg.com/vi/<%= x.video_id %>/mqdefault.jpg" alt="" width="96" height="54" loading="lazy">
+      <span class="sarki-satir-metin">
+        <span class="sarki-satir-ad"><%= x.sarki %></span>
+        <span class="sarki-satir-sanatci"><%= x.sanatci %></span>
+      </span>
+      <span class="format-rozet mp3">MP3</span>
+    </a>
+  </li>
+  <% }) %>
+</ol>

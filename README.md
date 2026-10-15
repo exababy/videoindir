@@ -24,6 +24,19 @@ Sunucuda `yt-dlp` ve `ffmpeg` PATH'te olmalı (Windows'ta `bin/` klasörü de de
 | `gorunumler/` | EJS şablonları (`parcalar/` ortak parçalar) |
 | `genel/` | CSS, JS, ikon ve OG görseli |
 
+## Günlük müzik listesi (Top 25)
+
+`sunucu/servisler/muzik.js`, YouTube Müzik Listeleri'nin Türkiye **günlük en popüler müzik videoları** verisini (charts.youtube.com) 3 saatte bir kontrol eder. Yeni günün listesi geldiğinde ilk 25 şarkı kaydedilir ve her şarkı için kalıcı bir sayfa açılır:
+
+| Sayfa | Örnek |
+| --- | --- |
+| Şarkı | `/wegh-geri-ver-mp3-indir/` — "Wegh - Geri Ver MP3 İndir" |
+| Günlük liste | `/top-25-sarkilar/` |
+| Arşiv | `/sarkilar/` |
+| Sanatçı | `/sanatci/wegh/` |
+
+Şarkı sayfaları liste verisinden (sıra, sıra geçmişi, çıkış tarihi, süre, söz yazarı, prodüktör, görüntülenme) içerik üretir; MusicRecording, VideoObject, FAQPage ve Breadcrumb şemaları içerir. Listeden çıkan şarkıların sayfaları silinmez. Yönetici panelinden durum görülebilir ve liste elle güncellenebilir.
+
 ## Reklamlar
 
 `/admin/panel` → **Reklam Yönetimi**: üst/alt banner, içerik arası, sonuç alanı, mobil sabit şerit, `<head>` kodu, `ads.txt` ve indirme öncesi zorunlu reklam (HTML kodu veya https video URL'si, en az 5 sn). Varsayılan yönetici: `admin` / `admin123` — ilk girişte değiştirin.

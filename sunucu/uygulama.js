@@ -110,7 +110,10 @@ const genelLimit = rateLimit({
   max: 200,
   // Admin dashboard widgets poll several endpoints periodically. They are
   // already protected by the admin session and have their own login limit.
-  skip: req => Boolean(req.session?.adminGiris)
+  // Sayfa görüntülemeleri (GET) sınırlanmaz: arama motoru botlarının yüzlerce
+  // sayfayı tararken 429 almaması SEO için kritiktir. Sınır yalnızca
+  // indirme/API isteklerine uygulanır.
+  skip: req => Boolean(req.session?.adminGiris) || ((req.method === 'GET' || req.method === 'HEAD') && !req.path.startsWith('/indir'))
 });
 const indirmeLimit = rateLimit({
   windowMs: 60 * 1000,
@@ -182,6 +185,15 @@ uygulama.use(gorunumYardimcilari.yereller);
   });
 
   cron.schedule('*/30 * * * *', () => temizlik.geciciDosyalariTemizle());
+
+  // YouTube Türkiye günlük müzik listesi: liste günde bir yenilenir ama
+  // yayın saati değişken olduğundan 3 saatte bir kontrol edilir; aynı günün
+  // listesi zaten kayıtlıysa hiçbir şey yapılmaz.
+  const muzik = require('./servisler/muzik');
+  if (process.env.MUZIK_LISTESI !== '0') {
+    cron.schedule('7 */3 * * *', () => muzik.guncelle().then(s => console.log('[MUZIK]', s.mesaj)), { timezone: 'Europe/Istanbul' });
+    setTimeout(() => muzik.guncelle().then(s => console.log('[MUZIK]', s.mesaj)), 5000);
+  }
 
   const sunucu = uygulama.listen(PORT, () => {
     console.log('');

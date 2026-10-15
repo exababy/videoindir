@@ -69,6 +69,35 @@ function tablolariOlustur() {
       olay TEXT NOT NULL,
       zaman INTEGER NOT NULL DEFAULT (strftime('%s','now'))
     );
+    CREATE TABLE IF NOT EXISTS muzik_parcalari (
+      video_id TEXT PRIMARY KEY,
+      slug TEXT UNIQUE NOT NULL,
+      sarki TEXT NOT NULL,
+      sanatci TEXT NOT NULL,
+      sanatci_slug TEXT NOT NULL,
+      ham_baslik TEXT,
+      kanal TEXT,
+      sure INTEGER DEFAULT 0,
+      yayin_tarihi TEXT,
+      soz_yazarlari TEXT,
+      produktorler TEXT,
+      goruntulenme INTEGER DEFAULT 0,
+      listede_gun INTEGER DEFAULT 0,
+      en_iyi_sira INTEGER,
+      son_sira INTEGER,
+      onceki_sira INTEGER,
+      ilk_tarih TEXT,
+      son_tarih TEXT,
+      olusturma_zamani INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+    );
+    CREATE INDEX IF NOT EXISTS muzik_sanatci ON muzik_parcalari (sanatci_slug);
+    CREATE TABLE IF NOT EXISTS muzik_listesi (
+      tarih TEXT NOT NULL,
+      sira INTEGER NOT NULL,
+      video_id TEXT NOT NULL,
+      goruntulenme INTEGER DEFAULT 0,
+      PRIMARY KEY (tarih, sira)
+    );
     CREATE TABLE IF NOT EXISTS kullanim_olaylari (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       olay TEXT NOT NULL,
@@ -121,4 +150,20 @@ function calistir(sql, params) {
   kaydet();
 }
 
-module.exports = { baglan, sorgu, tek, calistir, kaydet };
+// Çok sayıda yazma işlemini tek dosya kaydıyla ve tek işlemde (transaction)
+// uygular. Her calistir() çağrısı tüm veritabanını diske yazdığı için toplu
+// güncellemelerde bu fonksiyon kullanılmalıdır.
+function calistirToplu(islemler) {
+  if (!db) throw new Error('DB bagli degil');
+  db.run('BEGIN');
+  try {
+    islemler.forEach(([sql, params]) => db.run(sql, params || []));
+    db.run('COMMIT');
+  } catch (hata) {
+    try { db.run('ROLLBACK'); } catch {}
+    throw hata;
+  }
+  kaydet();
+}
+
+module.exports = { baglan, sorgu, tek, calistir, calistirToplu, kaydet };
