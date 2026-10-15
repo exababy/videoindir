@@ -35,6 +35,10 @@ function ytDlpJavascriptArgumanlari() {
     : (process.env.YTDLP_REMOTE_COMPONENTS || 'ejs:github');
   const args = ['--js-runtimes', runtime];
   if (remoteComponents) args.push('--remote-components', remoteComponents);
+  // Instagram hikayeleri ve bazı içerikler oturum çerezi olmadan alınamaz.
+  // Netscape formatındaki çerez dosyası YTDLP_COOKIES ile belirtilebilir.
+  const cerezDosyasi = process.env.YTDLP_COOKIES;
+  if (cerezDosyasi && fs.existsSync(cerezDosyasi)) args.push('--cookies', cerezDosyasi);
   return args;
 }
 
@@ -45,7 +49,7 @@ function dosyaAdiHazirla(baslik) {
     .trim()
     .replace(/[. ]+$/, '')
     .slice(0, 150);
-  return temiz || 'ozgurapp';
+  return temiz || 'mp3.net.tr';
 }
 
 function oynatmaListesiUrlMi(url) {
@@ -91,18 +95,20 @@ function medyaBilgisiAl(url, cb) {
       const veri = JSON.parse(stdout.trim().split('\n')[0]);
       const tumFormatlar = veri.formats || [];
       const formatHaritasi = new Map();
-      const sesVarmi = tumFormatlar.some(f => f.acodec && f.acodec !== 'none');
+      // Bazı siteler codec bilgisini vermez (null). Codec'i bilinmeyen tek
+      // dosyalık formatlar hem görüntü hem ses içeriyor kabul edilir.
+      const videoVarMi = f => f.vcodec !== 'none' && Boolean(f.vcodec || f.height);
+      const sesVarMi = f => (f.acodec ? f.acodec !== 'none' : (f.acodec == null && f.vcodec == null));
+      const sesVarmi = tumFormatlar.some(sesVarMi);
       const birlesikMp4Var = tumFormatlar.some(f => {
         const uzanti = String(f.ext || '').toLowerCase();
-        const videoVar = f.vcodec && f.vcodec !== 'none';
-        const sesVar = f.acodec && f.acodec !== 'none';
-        return uzanti === 'mp4' && videoVar && sesVar;
+        return uzanti === 'mp4' && videoVarMi(f) && sesVarMi(f);
       });
       const platformYoutube = bilgi.platform === 'youtube' || bilgi.platform === 'youtube_shorts';
 
       tumFormatlar.forEach(f => {
-        const videoVar = f.vcodec && f.vcodec !== 'none';
-        const sesVar = f.acodec && f.acodec !== 'none';
+        const videoVar = videoVarMi(f);
+        const sesVar = sesVarMi(f);
         const yukseklik = Number(f.height || 0);
         const uzanti = String(f.ext || '').toLowerCase();
         const codec = String(f.vcodec || '').toLowerCase();
@@ -132,7 +138,7 @@ function medyaBilgisiAl(url, cb) {
 
         if (birlesikMp4Var) {
           if (!sesVar) return;
-          if (!codec.includes('avc1') && !codec.includes('h264')) return;
+          if (codec && !codec.includes('avc1') && !codec.includes('h264')) return;
           const mevcut = formatHaritasi.get(etiket);
           if (!mevcut || Number(f.tbr || 0) > Number(mevcut.tbr || 0)) {
             formatHaritasi.set(etiket, { tur: 'video', format: 'mp4', kalite: etiket, yukseklik, tbr: Number(f.tbr || 0) });
@@ -276,7 +282,8 @@ function indir(url, format, kalite, cb, baslik) {
     } else {
       args = [
         '--no-warnings',
-        '-f', `best[ext=mp4][height<=${yukseklik}][vcodec^=avc1]/best[ext=mp4][height<=${yukseklik}][vcodec!*=hev1][vcodec!*=hvc1]/best[ext=mp4][height<=${yukseklik}]/best[ext=mp4]/best`,
+        '-f', `best[ext=mp4][height<=${yukseklik}][vcodec^=avc1]/best[ext=mp4][height<=${yukseklik}][vcodec!*=hev1][vcodec!*=hvc1]/best[ext=mp4][height<=${yukseklik}]/bestvideo[ext=mp4][height<=${yukseklik}]+bestaudio[ext=m4a]/bestvideo[height<=${yukseklik}]+bestaudio/best[ext=mp4]/best`,
+        '--merge-output-format', 'mp4',
         '-o', hedef, '--no-playlist', url
       ];
     }

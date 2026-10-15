@@ -1,0 +1,35 @@
+<%- include('parcalar/ust') %>
+<section class="kahraman kahraman-sayfa">
+  <div class="kap kahraman-ic">
+    <nav class="kirinti" aria-label="Sayfa konumu">
+      <ol>
+        <% kirinti.forEach(function (k, i) { %>
+        <li><% if (i < kirinti.length - 1) { %><a href="<%= k.yol %>"><%= k.ad %></a><% } else { %><span aria-current="page"><%= k.ad %></span><% } %></li>
+        <% }) %>
+      </ol>
+    </nav>
+    <h1><%= sayfa.h1 %></h1>
+    <p class="kahraman-ozet"><%= sayfa.ozet %></p>
+    <%- include('parcalar/arac', { arac: sayfa.arac }) %>
+  </div>
+</section>
+
+<%- include('parcalar/reklam', { alan: 'reklam_ust', boyut: '728 × 90 · mobil 320 × 100', ekSinif: 'reklam-kap reklam-banner' }) %>
+
+<%- include('parcalar/bolumler', { s: sayfa }) %>
+
+<% if (ilgili.length) { %>
+<section class="bolum bolum-alt" aria-labelledby="ilgiliBaslik">
+  <div class="kap">
+    <div class="bolum-bas bolum-bas-yan">
+      <div>
+        <p class="ust-baslik">Diğer araçlar</p>
+        <h2 id="ilgiliBaslik">Bunlar da işinize yarayabilir</h2>
+      </div>
+      <a class="metin-link" href="/araclar/">Tüm araçlar <svg width="16" height="16" aria-hidden="true"><use href="#i-sag-ok"/></svg></a>
+    </div>
+    <%- include('parcalar/kartlar', { liste: ilgili }) %>
+  </div>
+</section>
+<% } %>
+<%- include('parcalar/alt') %>

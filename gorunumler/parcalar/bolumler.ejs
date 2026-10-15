@@ -1,0 +1,51 @@
+<%# Ortak içerik bölümleri: nasıl yapılır, makale, SSS. Değişkenler: s (sayfa) %>
+<section class="bolum" id="nasil" aria-labelledby="nasilBaslik">
+  <div class="kap">
+    <div class="bolum-bas">
+      <p class="ust-baslik">Nasıl kullanılır?</p>
+      <h2 id="nasilBaslik"><%= s.nasilBaslik || (s.h1 + ' – 3 adımda') %></h2>
+    </div>
+    <ol class="adimlar">
+      <% s.adimlar.forEach(function (adim, i) { %>
+      <li class="adim">
+        <span class="adim-no"><%= i + 1 %></span>
+        <p><%= adim %></p>
+      </li>
+      <% }) %>
+    </ol>
+  </div>
+</section>
+
+<% if (s.icerik && s.icerik.length) { %>
+<section class="bolum bolum-alt">
+  <div class="kap kap-dar">
+    <article class="makale">
+      <% s.icerik.forEach(function (b, i) { %>
+      <h2><%= b.h2 %></h2>
+      <% (b.p || []).forEach(function (p) { %><p><%= p %></p><% }) %>
+      <% if (b.liste && b.liste.length) { %><ul><% b.liste.forEach(function (m) { %><li><%= m %></li><% }) %></ul><% } %>
+      <% if (i === 1) { %><%- include('reklam', { alan: 'reklam_icerik', boyut: '336 × 280 · duyarlı', ekSinif: 'reklam-makale' }) %><% } %>
+      <% }) %>
+    </article>
+  </div>
+</section>
+<% } %>
+
+<% if (s.sss && s.sss.length) { %>
+<section class="bolum" aria-labelledby="sssBaslik">
+  <div class="kap kap-dar">
+    <div class="bolum-bas">
+      <p class="ust-baslik">SSS</p>
+      <h2 id="sssBaslik">Sık sorulan sorular</h2>
+    </div>
+    <div class="sss">
+      <% s.sss.forEach(function (m, i) { %>
+      <details class="sss-oge"<% if (i === 0) { %> open<% } %>>
+        <summary><h3><%= m.s %></h3><svg width="18" height="18" aria-hidden="true"><use href="#i-asagi-ok"/></svg></summary>
+        <p><%= m.c %></p>
+      </details>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>

@@ -1,0 +1,83 @@
+</main>
+
+<%- include('reklam', { alan: 'reklam_alt', boyut: '728 × 90 · mobil 320 × 100', ekSinif: 'reklam-kap reklam-banner' }) %>
+
+<footer class="alt">
+  <div class="kap">
+    <div class="alt-ust">
+      <div class="alt-marka">
+        <a href="/" class="logo" aria-label="<%= site.ad %> ana sayfa">
+          <span class="logo-simge" aria-hidden="true"><svg width="18" height="18"><use href="#i-dalga"/></svg></span>
+          <span class="logo-yazi">mp3<span>.net.tr</span></span>
+        </a>
+        <p><%= site.aciklama %></p>
+      </div>
+      <nav class="alt-gruplar" aria-label="Tüm araçlar">
+        <% menu.forEach(function (grup) { %>
+        <div class="alt-grup">
+          <p class="alt-baslik"><%= grup.ad %></p>
+          <ul>
+            <% grup.sayfalar.slice(0, grup.anahtar === 'diger' ? 30 : 12).forEach(function (s) { %>
+            <li><a href="/<%= s.slug %>/"><%= s.menuAdi %></a></li>
+            <% }) %>
+          </ul>
+        </div>
+        <% }) %>
+      </nav>
+    </div>
+    <div class="alt-alt">
+      <p>© 2023–<%= new Date().getFullYear() %> <%= site.ad %>. Yalnızca kişisel kullanım içindir; telif haklarına saygı gösterin.</p>
+      <ul class="alt-yasal">
+        <% site.yasalSayfalar.forEach(function (s) { %><li><a href="/<%= s.slug %>/"><%= s.ad %></a></li><% }) %>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<% if ((reklam.reklam_mobil_sabit || '').trim() || reklam.reklam_yer_tutucu) { %>
+<div class="mobil-sabit" id="mobilSabit">
+  <button class="mobil-sabit-kapat" type="button" aria-label="Reklamı kapat"><svg width="14" height="14" aria-hidden="true"><use href="#i-kapat"/></svg></button>
+  <%- include('reklam', { alan: 'reklam_mobil_sabit', boyut: '320 × 50', ekSinif: 'reklam-ince' }) %>
+</div>
+<% } %>
+
+<div class="gecis" id="gecis" role="dialog" aria-modal="true" aria-labelledby="gecisBaslik" aria-hidden="true">
+  <div class="gecis-kart">
+    <div class="gecis-ust">
+      <div>
+        <p class="gecis-baslik" id="gecisBaslik">Dosyanız hazırlanıyor</p>
+        <p class="gecis-durum" id="gecisDurum"><span class="donen" aria-hidden="true"></span><span id="gecisDurumMetin">Dönüştürülüyor…</span></p>
+      </div>
+      <div class="gecis-sayac" id="gecisSayac" aria-live="polite">
+        <svg viewBox="0 0 36 36" aria-hidden="true"><circle class="gecis-sayac-iz" cx="18" cy="18" r="16"/><circle class="gecis-sayac-dolgu" id="gecisSayacDolgu" cx="18" cy="18" r="16"/></svg>
+        <span id="gecisSayacSayi"><%= reklam.reklam_gecis_sure %></span>
+      </div>
+    </div>
+    <div class="gecis-reklam">
+      <span class="reklam-etiket">Reklam</span>
+      <% if (reklam.reklam_gecis_video) { %>
+      <div class="gecis-video-kap">
+        <video class="gecis-video" id="gecisVideo" src="<%= reklam.reklam_gecis_video %>" muted playsinline preload="none" loop></video>
+        <button class="gecis-ses" id="gecisSes" type="button" aria-label="Sesi aç"><svg width="16" height="16" aria-hidden="true"><use href="#i-sessiz"/></svg></button>
+        <% if (reklam.reklam_gecis_link) { %><a class="gecis-video-link" href="<%= reklam.reklam_gecis_link %>" target="_blank" rel="sponsored noopener">Daha fazla bilgi</a><% } %>
+      </div>
+      <% } else if ((reklam.reklam_gecis_html || '').trim()) { %>
+      <div class="gecis-html"><%- reklam.reklam_gecis_html %></div>
+      <% } else { %>
+      <div class="reklam-bos gecis-bos"><span>Video veya görsel reklam alanı<br><small>300 × 250 · 16:9 video</small></span></div>
+      <% } %>
+    </div>
+    <div class="gecis-alt">
+      <p class="gecis-not" id="gecisNot">Reklam, hizmeti ücretsiz tutmamızı sağlar. Dosyanız bu sırada arka planda hazırlanıyor.</p>
+      <div class="gecis-butonlar">
+        <button class="btn btn-ikincil" id="gecisKapat" type="button" disabled>Bekleyin</button>
+        <a class="btn btn-ana" id="gecisIndir" href="#" hidden download><svg width="18" height="18" aria-hidden="true"><use href="#i-indir"/></svg><span>Dosyayı indir</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>window.MP3 = { reklamSure: <%= Number(reklam.reklam_gecis_sure) || 5 %>, maksToplu: <%= Number(maksTopluVideo) || 20 %> };</script>
+<script src="/js/site.js?v=<%= surum %>" defer></script>
+</body>
+</html>

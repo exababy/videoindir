@@ -2,7 +2,7 @@
 <html lang="tr" data-tema="aydinlik">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Paneli · OzgurAPP</title>
+<title>Admin Paneli · MP3.NET.TR</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f7f5f2;--bg2:#fffdfa;--bg3:#efebe6;--sinir:rgba(61,48,39,0.14);--yazi:#2d2926;--yazi2:#70675f;--vurgu:#c45d3e;--basari:#3d7c55;--hata:#b64d3b;--glow:rgba(196,93,62,0.11)}
@@ -115,7 +115,7 @@ tr:last-child td{border-bottom:none}
 </head>
 <body>
 <nav class="kenar">
-  <div class="kenar-logo"><strong><span>OzgurAPP</span> Admin</strong><br><small style="color:var(--yazi2);font-size:12px">Hoş geldiniz, <%= adminAdi %></small></div>
+  <div class="kenar-logo"><strong><span>MP3.NET.TR</span> Admin</strong><br><small style="color:var(--yazi2);font-size:12px">Hoş geldiniz, <%= adminAdi %></small></div>
   <a class="kenar-link aktif" href="/admin/panel">📊 Dashboard</a>
   <a class="kenar-link" href="/admin/cikis" class="cikis" style="color:#ef4444;margin-top:auto">⬡ Çıkış Yap</a>
 </nav>
@@ -174,6 +174,20 @@ tr:last-child td{border-bottom:none}
     </div>
     <div style="display:flex;align-items:center;gap:12px;margin-top:14px"><button class="kaydet-btn" id="ayarKaydetBtn" type="button">Ayarları kaydet</button><div class="mesaj" id="ayarMesaj"></div></div>
     <div class="ayar-bilgi">Playlist limiti ve saklama süresi yeni işlemlerde uygulanır. Saklama süresi 5 dakika ile 24 saat arasındadır.</div>
+  </div>
+
+  <div class="bolum" id="reklamBolumu">
+    <div class="sistem-ust"><h3>Reklam Yönetimi</h3><span class="sistem-zaman">AdSense / Ad Manager / özel HTML</span></div>
+    <div class="ayarlar-grid">
+      <div class="ayar-alani"><label for="reklamSure">Zorunlu reklam süresi (sn)</label><input id="reklamSure" type="number" min="5" max="30" inputmode="numeric"></div>
+      <div class="ayar-alani"><label for="reklamYerTutucu">Boş alanlarda yer tutucu</label><select id="reklamYerTutucu"><option value="1">Göster</option><option value="0">Gizle</option></select></div>
+      <div class="ayar-alani" style="grid-column:1/-1"><label for="reklamVideo">Zorunlu reklam video URL'si (https, mp4/webm — doluysa HTML yerine gösterilir)</label><input id="reklamVideo" type="url" placeholder="https://cdn.ornek.com/reklam.mp4"></div>
+      <div class="ayar-alani" style="grid-column:1/-1"><label for="reklamVideoLink">Video reklam tıklama bağlantısı (isteğe bağlı)</label><input id="reklamVideoLink" type="url" placeholder="https://reklamveren.com"></div>
+    </div>
+    <div id="reklamAlanlari" style="display:grid;gap:12px;margin-top:12px"></div>
+    <div class="ayar-alani" style="margin-top:12px"><label for="reklamAdsTxt">ads.txt içeriği</label><textarea id="reklamAdsTxt" rows="3" style="border:1px solid var(--sinir);border-radius:8px;padding:10px;background:var(--bg3);color:var(--yazi);font-family:'JetBrains Mono',monospace;font-size:12px" placeholder="google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0"></textarea></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:14px"><button class="kaydet-btn" id="reklamKaydetBtn" type="button">Reklamları kaydet</button><div class="mesaj" id="reklamMesaj"></div></div>
+    <div class="ayar-bilgi">Kod alanlarına reklam ağınızın verdiği HTML/JS kodunu yapıştırın. Boş bırakılan alan sitede gösterilmez (yer tutucu açıksa kesikli kutu görünür). İndirme öncesi reklam en az 5 saniyedir.</div>
   </div>
 
   <div class="bolum">
@@ -344,6 +358,64 @@ async function aktifIndirmeleriGetir() {
     document.getElementById('aktifIndirmeZamani').textContent = `Son kontrol: ${new Date().toLocaleTimeString('tr-TR')}`;
   } catch (hata) {
     liste.innerHTML = `<div class="sistem-durum-detay" style="color:var(--hata)">${htmlGuvenli(hata.message || 'Aktif işler alınamadı.')}</div>`;
+  }
+}
+
+let reklamAlanTanimlari = {};
+function reklamMesajiGoster(tur, metin) {
+  const mesaj = document.getElementById('reklamMesaj');
+  mesaj.className = 'mesaj ' + tur;
+  mesaj.textContent = metin;
+}
+async function reklamlariGetir() {
+  try {
+    const yanit = await fetch('/admin/reklamlar', { headers: { Accept: 'application/json' } });
+    const veri = await yanit.json();
+    if (!veri.basari) throw new Error(veri.mesaj || 'Reklamlar alınamadı.');
+    reklamAlanTanimlari = veri.alanlar;
+    const r = veri.reklamlar;
+    document.getElementById('reklamSure').value = r.reklam_gecis_sure;
+    document.getElementById('reklamYerTutucu').value = r.reklam_yer_tutucu ? '1' : '0';
+    document.getElementById('reklamVideo').value = r.reklam_gecis_video || '';
+    document.getElementById('reklamVideoLink').value = r.reklam_gecis_link || '';
+    document.getElementById('reklamAdsTxt').value = r.ads_txt || '';
+    const kap = document.getElementById('reklamAlanlari');
+    kap.innerHTML = '';
+    Object.entries(veri.alanlar).forEach(([anahtar, tanim]) => {
+      const alan = document.createElement('div');
+      alan.className = 'ayar-alani';
+      const etiket = document.createElement('label');
+      etiket.htmlFor = 'reklam_' + anahtar;
+      etiket.textContent = tanim.ad + (tanim.boyut ? ' · ' + tanim.boyut : '');
+      const metin = document.createElement('textarea');
+      metin.id = 'reklam_' + anahtar;
+      metin.rows = 3;
+      metin.value = r[anahtar] || '';
+      metin.placeholder = '<!-- reklam kodu -->';
+      metin.style.cssText = "border:1px solid var(--sinir);border-radius:8px;padding:10px;background:var(--bg3);color:var(--yazi);font-family:'JetBrains Mono',monospace;font-size:12px;resize:vertical";
+      alan.append(etiket, metin);
+      kap.append(alan);
+    });
+  } catch (hata) {
+    reklamMesajiGoster('hata2', hata.message || 'Reklamlar alınamadı.');
+  }
+}
+async function reklamlariKaydet() {
+  const govde = {
+    reklam_gecis_sure: Number(document.getElementById('reklamSure').value),
+    reklam_yer_tutucu: document.getElementById('reklamYerTutucu').value,
+    reklam_gecis_video: document.getElementById('reklamVideo').value,
+    reklam_gecis_link: document.getElementById('reklamVideoLink').value,
+    ads_txt: document.getElementById('reklamAdsTxt').value
+  };
+  Object.keys(reklamAlanTanimlari).forEach(anahtar => { govde[anahtar] = document.getElementById('reklam_' + anahtar).value; });
+  try {
+    const yanit = await fetch('/admin/reklamlar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(govde) });
+    const veri = await yanit.json();
+    if (!veri.basari) throw new Error(veri.mesaj);
+    reklamMesajiGoster('basari', veri.mesaj);
+  } catch (hata) {
+    reklamMesajiGoster('hata2', hata.message || 'Kaydedilemedi.');
   }
 }
 
@@ -528,6 +600,8 @@ document.addEventListener('DOMContentLoaded', () => {
   aktifIndirmeleriGetir();
   window.setInterval(aktifIndirmeleriGetir, 3000);
   document.getElementById('ayarKaydetBtn')?.addEventListener('click', ayarlariKaydet);
+  document.getElementById('reklamKaydetBtn')?.addEventListener('click', reklamlariKaydet);
+  reklamlariGetir();
   ayarlariGetir();
   document.getElementById('guvenlikToggle')?.addEventListener('click', guvenlikPaneliniDegistir);
   document.getElementById('kullanimAralik')?.addEventListener('change', kullanimAnaliziniGetir);

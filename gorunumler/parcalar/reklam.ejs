@@ -1,0 +1,12 @@
+<% var kod = reklam[alan]; var sinif = typeof ekSinif !== 'undefined' ? ekSinif : ''; %>
+<% if (kod && kod.trim()) { %>
+<div class="reklam <%= sinif %>" data-reklam="<%= alan %>">
+  <span class="reklam-etiket">Reklam</span>
+  <div class="reklam-ic"><%- kod %></div>
+</div>
+<% } else if (reklam.reklam_yer_tutucu) { %>
+<div class="reklam <%= sinif %>" data-reklam="<%= alan %>" aria-hidden="true">
+  <span class="reklam-etiket">Reklam</span>
+  <div class="reklam-ic reklam-bos"><span><%= typeof boyut !== 'undefined' ? boyut : 'Reklam alanı' %></span></div>
+</div>
+<% } %>

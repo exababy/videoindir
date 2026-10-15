@@ -1,0 +1,18 @@
+<%- include('parcalar/ust') %>
+<section class="kahraman kahraman-sayfa kahraman-kisa">
+  <div class="kap kahraman-ic">
+    <nav class="kirinti" aria-label="Sayfa konumu"><ol><li><a href="/">Ana Sayfa</a></li><li><span aria-current="page">Tüm Araçlar</span></li></ol></nav>
+    <h1>Tüm indirme araçları</h1>
+    <p class="kahraman-ozet">Instagram, YouTube, TikTok, Twitter/X, Facebook ve 20’den fazla platform için ücretsiz MP3 ve video indirme araçları.</p>
+  </div>
+</section>
+<%- include('parcalar/reklam', { alan: 'reklam_ust', boyut: '728 × 90 · mobil 320 × 100', ekSinif: 'reklam-kap reklam-banner' }) %>
+<% menu.forEach(function (grup) { %>
+<section class="bolum bolum-sik" aria-labelledby="grup-<%= grup.anahtar %>">
+  <div class="kap">
+    <h2 class="grup-baslik" id="grup-<%= grup.anahtar %>"><%= grup.ad %></h2>
+    <%- include('parcalar/kartlar', { liste: grup.sayfalar }) %>
+  </div>
+</section>
+<% }) %>
+<%- include('parcalar/alt') %>

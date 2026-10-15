@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="tr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title><%= seo.baslik %></title>
+<meta name="description" content="<%= seo.aciklama %>">
+<meta name="robots" content="<%= seo.robots %>">
+<link rel="canonical" href="<%= seo.kanonik %>">
+<link rel="alternate" hreflang="tr" href="<%= seo.kanonik %>">
+<link rel="alternate" hreflang="x-default" href="<%= seo.kanonik %>">
+<meta property="og:locale" content="<%= site.yerel %>">
+<meta property="og:type" content="<%= seo.tur %>">
+<meta property="og:site_name" content="<%= site.ad %>">
+<meta property="og:title" content="<%= seo.baslik %>">
+<meta property="og:description" content="<%= seo.aciklama %>">
+<meta property="og:url" content="<%= seo.kanonik %>">
+<meta property="og:image" content="<%= seo.gorsel %>">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="<%= site.ad %> – <%= site.slogan %>">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= seo.baslik %>">
+<meta name="twitter:description" content="<%= seo.aciklama %>">
+<meta name="twitter:image" content="<%= seo.gorsel %>">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0b10" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-title" content="<%= site.ad %>">
+<meta name="yandex-verification" content="df74e58d023c5990">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="preload" href="/css/site.css?v=<%= surum %>" as="style">
+<link rel="stylesheet" href="/css/site.css?v=<%= surum %>">
+<script>
+(function(){try{var t=localStorage.getItem('tema');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+<% if (seo.jsonld) { %><script type="application/ld+json"><%- seo.jsonld %></script>
+<% } %><% if (reklam.reklam_head) { %><%- reklam.reklam_head %>
+<% } %></head>
+<body>
+<a class="atla" href="#icerik">İçeriğe geç</a>
+<%- include('ikonlar') %>
+<header class="ust" id="ust">
+  <div class="kap ust-ic">
+    <a href="/" class="logo" aria-label="<%= site.ad %> ana sayfa">
+      <span class="logo-simge" aria-hidden="true"><svg width="18" height="18"><use href="#i-dalga"/></svg></span>
+      <span class="logo-yazi">mp3<span>.net.tr</span></span>
+    </a>
+
+    <nav class="menu" id="menu" aria-label="Ana menü">
+      <ul class="menu-liste">
+        <% menu.slice(0, 4).forEach(function (grup) { %>
+        <li class="menu-oge">
+          <a class="menu-baglanti" href="<%= grup.hub ? '/' + grup.hub + '/' : '/araclar/' %>"<% if (grup.sayfalar.some(function (s) { return yol === '/' + s.slug + '/'; })) { %> aria-current="true"<% } %>><%= grup.ad %><svg class="menu-ok" width="14" height="14" aria-hidden="true"><use href="#i-asagi-ok"/></svg></a>
+          <div class="menu-acilir">
+            <ul>
+              <% grup.sayfalar.forEach(function (s) { %>
+              <li><a href="/<%= s.slug %>/"<% if (yol === '/' + s.slug + '/') { %> aria-current="page"<% } %>><%= s.menuAdi %></a></li>
+              <% }) %>
+            </ul>
+          </div>
+        </li>
+        <% }) %>
+        <li class="menu-oge">
+          <a class="menu-baglanti" href="/araclar/"<% if (yol === '/araclar/') { %> aria-current="page"<% } %>>Tüm Araçlar</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="ust-sag">
+      <button class="ikon-btn" id="temaBtn" type="button" aria-label="Koyu / açık tema">
+        <svg class="tema-gunes" width="18" height="18" aria-hidden="true"><use href="#i-gunes"/></svg>
+        <svg class="tema-ay" width="18" height="18" aria-hidden="true"><use href="#i-ay"/></svg>
+      </button>
+      <button class="ikon-btn menu-btn" id="menuBtn" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="menu">
+        <svg width="20" height="20" aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<main id="icerik">

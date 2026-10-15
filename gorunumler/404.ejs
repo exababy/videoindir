@@ -1,37 +1,16 @@
-<!DOCTYPE html>
-<html lang="tr" data-tema="aydinlik">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>404 - Sayfa Bulunamadı · OzgurAPP</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
-<style>
-:root { --bg:#f7f5f2; --yazi:#2d2926; --yazi2:#70675f; --vurgu:#c45d3e; }
-* { box-sizing:border-box; margin:0; padding:0; }
-body { font-family:'Sora',sans-serif; background:var(--bg); color:var(--yazi); min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:24px; }
-.kap { max-width:480px; }
-.sayi { font-size:120px; font-weight:700; letter-spacing:-8px; color:var(--vurgu); line-height:1; opacity:0.8; }
-h1 { font-size:24px; font-weight:600; margin:16px 0 12px; }
-p { color:var(--yazi2); line-height:1.7; margin-bottom:32px; }
-.geri-btn { display:inline-block; background:var(--vurgu); color:white; padding:14px 32px; border-radius:12px; text-decoration:none; font-weight:600; transition:all 0.2s; }
-.geri-btn:hover { transform:translateY(-2px); box-shadow:0 6px 14px rgba(196,93,62,0.22); }
-.sayac { margin-top:20px; font-size:13px; color:var(--yazi2); }
-.sayac span { color:var(--vurgu); font-weight:600; }
-</style>
-</head>
-<body>
-<div class="kap">
-  <div class="sayi">404</div>
-  <h1>Sayfa Bulunamadı</h1>
-  <p>Aradığınız sayfa mevcut değil veya taşınmış olabilir.</p>
-  <a href="/" class="geri-btn">Ana Sayfaya Dön</a>
-  <div class="sayac"><span id="s">10</span> saniye sonra ana sayfaya yönlendirileceksiniz.</div>
-</div>
-<script>
-let n=10;
-const el=document.getElementById('s');
-setInterval(()=>{ n--; el.textContent=n; if(n<=0) location.href='/'; },1000);
-const t=localStorage.getItem('tema'); if(t) document.documentElement.dataset.tema=t;
-</script>
-</body>
-</html>
+<%- include('parcalar/ust') %>
+<section class="kahraman kahraman-sayfa">
+  <div class="kap kahraman-ic">
+    <p class="rozet">404</p>
+    <h1>Bu sayfa bulunamadı</h1>
+    <p class="kahraman-ozet">Aradığınız sayfa taşınmış veya kaldırılmış olabilir. Bağlantınızı aşağıya yapıştırarak indirmeye hemen başlayabilirsiniz.</p>
+    <%- include('parcalar/arac', { arac: { mod: 'indir', format: null, placeholder: 'Bağlantı yapıştırın veya şarkı adı yazın' } }) %>
+  </div>
+</section>
+<section class="bolum bolum-alt">
+  <div class="kap">
+    <div class="bolum-bas"><h2>Popüler araçlar</h2></div>
+    <%- include('parcalar/kartlar', { liste: menu.flatMap(function (g) { return g.sayfalar.slice(0, 2); }).slice(0, 12) }) %>
+  </div>
+</section>
+<%- include('parcalar/alt') %>

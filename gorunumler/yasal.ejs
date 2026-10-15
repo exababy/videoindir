@@ -1,0 +1,19 @@
+<%- include('parcalar/ust') %>
+<section class="kahraman kahraman-sayfa kahraman-kisa">
+  <div class="kap kap-dar kahraman-ic">
+    <nav class="kirinti" aria-label="Sayfa konumu"><ol><li><a href="/">Ana Sayfa</a></li><li><span aria-current="page"><%= icerik.h1 %></span></li></ol></nav>
+    <h1><%= icerik.h1 %></h1>
+  </div>
+</section>
+<section class="bolum">
+  <div class="kap kap-dar">
+    <article class="makale">
+      <% icerik.bolumler.forEach(function (b) { %>
+      <h2><%= b.h2 %></h2>
+      <% b.p.forEach(function (p) { %><p><%= p %></p><% }) %>
+      <% }) %>
+      <p class="makale-not">Son güncelleme: <%= seo.guncelleme %></p>
+    </article>
+  </div>
+</section>
+<%- include('parcalar/alt') %>

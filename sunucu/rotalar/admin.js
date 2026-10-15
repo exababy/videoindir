@@ -7,6 +7,7 @@ const { execFile } = require('child_process');
 const db = require('../../veritabani/veritabani');
 const { aktifIndirmeler } = require('../servisler/indirici');
 const ayarlar = require('../servisler/ayarlar');
+const reklam = require('../servisler/reklam');
 
 const yonlendirici = express.Router();
 const PROJE_KLASORU = path.join(__dirname, '..', '..');
@@ -250,6 +251,19 @@ yonlendirici.post('/ayarlar', adminKorumasi, (req, res) => {
     res.json({ basari: true, mesaj: 'Ayarlar güncellendi.', ayarlar: ayarlar.tumunuAl() });
   } catch {
     res.status(500).json({ basari: false, mesaj: 'Ayarlar kaydedilemedi.' });
+  }
+});
+
+yonlendirici.get('/reklamlar', adminKorumasi, (req, res) => {
+  res.json({ basari: true, alanlar: reklam.ALANLAR, reklamlar: reklam.tumunuAl() });
+});
+
+yonlendirici.post('/reklamlar', adminKorumasi, (req, res) => {
+  try {
+    const reklamlar = reklam.kaydet(req.body || {});
+    res.json({ basari: true, mesaj: 'Reklam ayarları kaydedildi.', reklamlar });
+  } catch {
+    res.status(500).json({ basari: false, mesaj: 'Reklam ayarları kaydedilemedi.' });
   }
 });
 

@@ -1,0 +1,14 @@
+<ul class="kartlar">
+  <% liste.forEach(function (s) { %>
+  <li>
+    <a class="kart" href="/<%= s.slug %>/">
+      <span class="kart-ikon kart-<%= s.platform %>" aria-hidden="true"><svg width="20" height="20"><use href="<%= ({ youtube: '#p-youtube', instagram: '#p-instagram', tiktok: '#p-tiktok', twitter: '#p-x', facebook: '#p-facebook' })[s.platform] || (s.arac && s.arac.format === 'mp3' ? '#i-muzik' : '#i-video') %>"/></svg></span>
+      <span class="kart-metin">
+        <span class="kart-ad"><%= s.menuAdi %></span>
+        <span class="kart-alt"><%= s.anahtar %></span>
+      </span>
+      <svg class="kart-ok" width="16" height="16" aria-hidden="true"><use href="#i-sag-ok"/></svg>
+    </a>
+  </li>
+  <% }) %>
+</ul>
